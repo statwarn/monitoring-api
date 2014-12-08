@@ -11,6 +11,7 @@ __param:__
 ```
 access_token: String
 timestamp: Number (optional)  (format ISO 8601)
+server_id: String
 ```
 
 redis info of a server (json):
@@ -81,6 +82,8 @@ Gateway Timeout 504: timeout
 
 ### DEL /metrics
 
+Remove every metrics related to on or more `server_ids`. This route will be called each time a user remove its account or its own server.
+
 __params:__
 
 ```
@@ -98,12 +101,13 @@ Internal Error 500: Internal server error
 Gateway Timeout 504: timeout
 ```
  
+### DEL /internal/removeAllData
 
-### DEL /internal/removeAllDatas 
-remove datas older than ...
+Remove datas older than `remove_before_date`.
 
 __params:__
 
 ```
-route_token: String
+root_token: String
+remove\_before_date : Timestamp
 ```
