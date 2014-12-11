@@ -1,0 +1,39 @@
+{
+  "name": "monitoring-api",
+  "version": "0.0.0",
+  "description": "monitoring api for redsmin",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@bitbucket.org:redsmin/monitoring-api.git"
+  },
+  "keywords": [
+    "monitoring",
+    "api",
+    "redsmin",
+    "redis",
+    "elasticsearch"
+  ],
+  "author": "rbaumier",
+  "license": "ISC",
+  "dependencies": {
+    "amqp-dsl": "^2.0.1",
+    "body-parser": "^1.10.0",
+    "elasticsearch": "^3.0.1",
+    "express": "^4.10.4",
+    "lodash": "^2.4.1",
+    "mocha": "^2.0.1",
+    "node-redis": "^0.1.7",
+    "redis": "^0.12.1"
+  },
+  "devDependencies": {
+    "chai": "^1.10.0",
+    "redis": "^0.12.1",
+    "redis-info": "^2.0.2",
+    "request": "^2.49.0"
+  }
+}
