@@ -15,7 +15,7 @@ module.exports = function(app, InfoModel, esClient, amqp, PrettyError) {
 
   app.use('/api', AuthMiddleware);
 
-  app.post('/api/v1/infos', function(req, res) {
+  app.post('/api/v1/metrics', function(req, res) {
     var timestamp = req.query.timestamp;
     var server_id = req.query.server_id;
 
