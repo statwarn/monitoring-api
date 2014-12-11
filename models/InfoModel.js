@@ -52,7 +52,7 @@ InfoModel.prototype.create = function(f) {
     }
     f(res);
   });
-  // + amqp.publish..
+  amqp.exchanges['monitoring'].publish('#monitoring.new', this);
 }
 
 module.exports = InfoModel;

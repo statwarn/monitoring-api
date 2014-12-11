@@ -11,17 +11,23 @@ var InfoModel     = require('./models/InfoModel');
 
 var PrettyError   = require('./helpers/PrettyError');
 var esClient      = require('./helpers/elasticsearch')(config.elasticsearch);
-var amqp          = require('./helpers/amqp');
-
+var amqp          = require('./helpers/amqp')(config);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
 }));
 
-require('./api/routes')(app, InfoModel, esClient, amqp, PrettyError);
+amqp({
+  exchanges: ['monitoring']
+}, function onConnect(err, amqp) {
+  if (err) {
+    throw new PrettyError(500, 'AMQP error', err);
+  }
+  require('./api/routes')(app, InfoModel, esClient, amqp, PrettyError);
+});
+
 
 app.listen(PORT, function() {
   console.log('server started on ' + PORT);
 });
-
