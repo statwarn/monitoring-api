@@ -50,7 +50,7 @@ InfoModel.prototype.create = function(f) {
     if (err) {
       return f(new PrettyError(500, 'Could not create the info', err));
     }
-    f(res);
+    f(null, res);
   });
   amqp.exchanges['monitoring'].publish('#monitoring.new', this);
 }
