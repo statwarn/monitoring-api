@@ -31,5 +31,18 @@ module.exports = function(app, InfoModel, esClient, amqp, PrettyError) {
       }
       res.status(200).json(info);
     });
+
+  });
+
+  app.get('/api/v1/metrics', function(req, res) {
+    var metrics    = req.query.metrics;
+    var server_ids = req.query.server_ids;
+    var start      = req.query.start_date_ts;
+    var end        = req.query.end_date_ts;
+    var precision  = req.query.precision;
+
+    InfoModel.findByServerIds(server_ids, start, end, precision, function(err, metrics) {
+      return res.status(200).json(metrics);
+    });
   });
 }
