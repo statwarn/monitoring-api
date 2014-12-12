@@ -38,13 +38,13 @@ describe('POST /metrics endpoint', function() {
       body = JSON.parse(body);
       t.strictEqual(err, null);
 
-      esClient.get({
+      esClient.exists({
         index: body._index,
         type: body._type,
         id: body._id
-      }, function(err, res) {
+      }, function(err, exists) {
         t.strictEqual(err, undefined);
-        t.strictEqual(res.found, true);
+        t.strictEqual(exists, true);
         done();
       });
     });
