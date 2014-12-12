@@ -3,7 +3,7 @@ var amqp = require('amqp-dsl');
 
 module.exports = function(config){
   return function connect(obj, f){
-    var conn = amqp.login(config.amqp);
+    var conn = amqp.login(config);
 
     conn.on('error', function(err){
       throw err;

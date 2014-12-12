@@ -1,17 +1,17 @@
 'use strict';
 
-var http          = require('http');
-var express       = require('express');
-var bodyParser    = require('body-parser');
-var app           = express();
-var PORT          = process.env.PORT || 9000;
+var http        = require('http');
+var express     = require('express');
+var bodyParser  = require('body-parser');
+var app         = express();
+var PORT        = process.env.PORT || 9000;
 
-var config        = require('./config');
-var InfoModel     = require('./models/InfoModel');
+var config      = require('./config');
+var InfoModel   = require('./models/InfoModel');
 
-var PrettyError   = require('./helpers/PrettyError');
-var esClient      = require('./helpers/elasticsearch')(config.elasticsearch);
-var amqp          = require('./helpers/amqp')(config);
+var PrettyError = require('./helpers/PrettyError');
+var esClient    = require('./helpers/elasticsearch')(config.elasticsearch);
+var amqp        = require('./helpers/amqp')(config.amqp);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
