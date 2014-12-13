@@ -5,6 +5,7 @@ var async       = require('async');
 var PrettyError = require('../helpers/PrettyError');
 var esClient    = null;
 var amqp        = null;
+var MetricModel = require('./MetricModel');
 /**
  * [InfoModel description]
  */
@@ -19,49 +20,55 @@ InfoModel.setDependencies = function(_esClient, _amqp)  {
   amqp     = _amqp;
 }
 
-InfoModel.destroy = function(server_ids) {}
-
-InfoModel.server_idsToIndices = function(server_ids, f) {
-  //TODO: check server_ids
-  function iterator(server_id, cb) {
-    return cb(null, 'monitoring-'+server_id);
-  }
-
-  async.map(server_ids.split(','), iterator, function (err, indices) {
-    if(err) {
-      new PrettyError(400, 'at least one server_id is invalid', err);
+InfoModel.toElasticField = function(field, text, f) {
+  function iterator(field, cb) {
+      return cb(null, text + field);
     }
-    f(null, indices);
+
+  async.map(field.split(','), iterator, function (err, fields) {
+    if(err) {
+      new PrettyError(400, 'at least one ' + field + ' is invalid', err);
+    }
+    f(null, fields);
   });
 }
 
-InfoModel.findByServerIds = function(server_ids, start, end, precision, f){
-  InfoModel.server_idsToIndices(server_ids, function(err, indices) {
-    if(err) {
-      return f(err);
-    }
-    esClient.search({
+// histogram aggregation: http://www.elasticsearch.com/guide/en/elasticsearch/reference/current/search-aggregations-bucket-histogram-aggregation.html
+// date histogram aggregation: http://www.elasticsearch.com/guide/en/elasticsearch/reference/current/search-aggregations-bucket-datehistogram-aggregation.html
+InfoModel.findByServerIds = function(server_ids, metrics, start, end, precision, f){
+  InfoModel.toElasticField(server_ids, 'monitoring', function(err, indices) {
+    InfoModel.toElasticField(metrics, 'metrics.', function(err, metrics) {
+      if(err) {
+        return f(err);
+      }
+     esClient.search({
       indices: indices,
       type: 'info',
+      fields: ['server_id', 'timestamp'].concat(metrics),
       body: {
-        query: {
-          range: {
-            timestamp: {
-              gte: start,
-              lte: end
+        "aggs": {
+          "volume": {
+            "date_histogram": {
+              "field": "timestamp",
+              "min_doc_count": 0,
+              "interval": precision,
+              "extended_bounds": {
+                "min": new Date(start).getTime(),
+                "max": new Date(end).getTime()
+              }
             }
           }
         }
       }
     }, function(err, res) {
-      if(err) {
-        return f(500, 'could not get the metrics', err)
-      }
-      InfoModel.toMetricsArray(res, function(err, metrics) {
         if(err) {
-          return f(new PrettyError(500, 'cannot convert response to metrics', err));
+          return f(500, 'could not get the metrics', err)
         }
-        return f(null, metrics);
+        InfoModel.toMetricsArray(res.hits.hits, function(err, metrics) {
+          if(err) {
+            return f(new PrettyError(500, 'cannot convert response to metrics', err));
+          }
+          return f(null, metrics);
       });
     });
   });
@@ -70,6 +77,7 @@ InfoModel.findByServerIds = function(server_ids, start, end, precision, f){
 InfoModel.toMetricsArray = function(res, f) {
   return f(null, res);
 }
+
 
 InfoModel.prototype.fromJSON = function(server_id, timestamp, json) {
   if (!_.isObject(json)) {
@@ -104,7 +112,5 @@ InfoModel.prototype.create = function(f) {
   });
   amqp.exchanges['monitoring'].publish('#monitoring.new', this);
 }
-
-
 
 module.exports = InfoModel;

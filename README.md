@@ -48,8 +48,8 @@ __params:__
 metrics: String (e.g. a,b)
 server_ids: String (e.g. 1,2,3)
 access_token: String
-start-date-ts: Number
-end-date-ts: Number
+start_date_ts: Number
+end_date_ts: Number
 precision: String (e.g. 1d,1h,1m)
 ```
 __response__
@@ -100,7 +100,7 @@ Unauthorized 401: wrong token
 Internal Error 500: Internal server error
 Gateway Timeout 504: timeout
 ```
- 
+
 ### DEL /internal/removeAllData
 
 Remove datas older than `remove_before_date`.
