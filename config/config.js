@@ -2,7 +2,8 @@
 
 module.exports = function (logger) {
   var env = require('common-env')(logger);
-  return env.getOrElse({
+
+  return env.getOrElseAll({
     api: {
       port: 9000
     },
