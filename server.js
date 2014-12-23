@@ -1,17 +1,17 @@
 'use strict';
 
-var http        = require('http');
-var express     = require('express');
-var bodyParser  = require('body-parser');
-var app         = express();
-var PORT        = process.env.PORT || 9000;
+var logger = require('helpers/logger');
 
-var config      = require('./config');
-var InfoModel   = require('./models/InfoModel');
+var express = require('express');
+var bodyParser = require('body-parser');
+var app = express();
+
+var config = require('./config')(console.log.bind(console));
+var InfoModel = require('./models/InfoModel');
 
 var PrettyError = require('./helpers/PrettyError');
-var esClient    = require('./helpers/elasticsearch')(config.elasticsearch);
-var amqp        = require('./helpers/amqp')(config.amqp);
+var esClient = require('./helpers/elasticsearch')(config.elasticsearch);
+var amqp = require('./helpers/amqp')(config.amqp);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -28,6 +28,6 @@ amqp({
 });
 
 
-app.listen(PORT, function() {
-  console.log('server started on ' + PORT);
+app.listen(config.api.port, function () {
+  console.log('server started on ' + config.api.port);
 });
