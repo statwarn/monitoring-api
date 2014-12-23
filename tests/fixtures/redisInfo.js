@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = {
   "redis_version": "2.8.17",
   "redis_git_sha1": "00000000",
