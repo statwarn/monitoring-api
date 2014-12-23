@@ -12,8 +12,7 @@
 //     ]
 //   }
 function MetricModel(server_id, name, values) {
-  this.server_id = server_id || -1;
+  this.server_id = server_id ||  -1;
   this.name = name || null;
-  this.values = values || [];
-}
-
+  this.values = values ||  [];
+};
