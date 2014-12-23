@@ -5,7 +5,6 @@ var async = require('async');
 var PrettyError = require('../helpers/PrettyError');
 var esClient = null;
 var amqp = null;
-var MetricModel = require('./MetricModel');
 
 /**
  * [InfoModel description]
