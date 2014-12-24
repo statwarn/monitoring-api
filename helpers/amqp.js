@@ -1,11 +1,12 @@
 'use strict';
 var amqp = require('amqp-dsl');
 
-module.exports = function (config) {
+module.exports = function (config, logger) {
   return function connect(obj, f) {
     var conn = amqp.login(config);
 
     conn.on('error', function (err) {
+      logger.error("AMQP ERROR", err);
       throw err;
     });
 

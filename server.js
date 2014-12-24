@@ -1,37 +1,27 @@
 'use strict';
+require('./bootstrap');
 
 var logger = require('./helpers/logger');
-
-var express = require('express');
-var bodyParser = require('body-parser');
-var app = express();
-
 var config = require('./config')(logger);
+var es = require('./helpers/elasticsearch')(config.elasticsearch);
+var amqp = require('./helpers/amqp')(config.amqp, logger);
 
-var InfoModel = require('./models/InfoModel');
-
-var PrettyError = require('./helpers/PrettyError');
-
-var esClient = require('./helpers/elasticsearch')(config.elasticsearch);
-var amqp = require('./helpers/amqp')(config.amqp);
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
-
-amqp({
-  exchanges: ['monitoring']
-}, function onConnect(err, amqp) {
+// first connect to AMQP
+amqp({}, function onConnected(err, amqp) {
   if (err) {
-    throw new PrettyError(500, 'AMQP error', err);
+    logger.error(err);
+    throw err;
   }
 
-  logger.info('AMQP ready');
+  logger.info('AMQP ready', config.amqp);
 
-  require('./api/routes')(app, InfoModel, esClient, amqp, PrettyError);
+  // Then start the API
+  var api = require('./api')(config, logger, es, amqp.connection, function onError(err, method, url) {
+    // @todo track that into stathat & co
+    logger.error(method + url, err);
+  });
 
-  app.listen(config.api.port, function () {
-    console.log('server started on ' + config.api.port);
+  api.listen(config.api.port, function () {
+    logger.info('API listening on ' + config.api.port);
   });
 });
