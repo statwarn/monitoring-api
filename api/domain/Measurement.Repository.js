@@ -41,12 +41,10 @@ module.exports = function (es, amqp, config) {
           mandatory: true,
           confirm: true,
           exchange: 'monitoring'
-        }, function (err) {
-          console.log('ok', err);
+        }, function onConfirm() {
           f(null);
         });
       });
-
     },
 
     // histogram aggregation: http://www.elasticsearch.com/guide/en/elasticsearch/reference/current/search-aggregations-bucket-histogram-aggregation.html
