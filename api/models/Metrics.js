@@ -3,6 +3,7 @@
 // Repository
 module.exports = function (es, amqp, PrettyError) {
   var Metric = require('./Metric');
+  var DateRangeInterval = require('./DateRangeInterval');
 
   function toElasticField(field, text, f) {
     function iterator(field, cb) {
@@ -42,7 +43,9 @@ module.exports = function (es, amqp, PrettyError) {
 
     // histogram aggregation: http://www.elasticsearch.com/guide/en/elasticsearch/reference/current/search-aggregations-bucket-histogram-aggregation.html
     // date histogram aggregation: http://www.elasticsearch.com/guide/en/elasticsearch/reference/current/search-aggregations-bucket-datehistogram-aggregation.html
-    findByServerIds: function (server_ids, metrics, start, end, precision, f) {
+    findByServerIds: function (server_ids, metrics, dateRangeInterval, f) {
+      assert(dateRangeInterval instanceof DateRangeInterval);
+
       toElasticField(server_ids, 'monitoring', function (err, indices) {
         toElasticField(metrics, 'metrics.', function (err, metrics) {
           if (err) {

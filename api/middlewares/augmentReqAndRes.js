@@ -11,6 +11,14 @@ module.exports = function (onError) {
       return req.params[param] || req.param(param);
     };
 
+    req.resOrValue = function (err, value) {
+      if (err) {
+        return res.error(err);
+      }
+
+      return res.ok(value);
+    };
+
     // For express 3.x res.json(code, json);
     /**
      * [error description]

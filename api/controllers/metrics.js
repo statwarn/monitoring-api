@@ -5,18 +5,20 @@ module.exports = function (models) {
     get: function (req, res) {
       // @todo marge start, end & precision inside an object
       // rename start & end
-      models.Infos.findByServerIds(
+      var interval = models.IntervalPrecision.fromReq(req);
+
+      if (interval instanceof PrettyError) {
+        return res.error(interval);
+      }
+
+      // @todo check that server_ids is an array of string (or a string -> convert it to an array)
+      // @todo check that server_ids is an array of string (or a string -> convert it to an array)
+
+      models.Metrics.findByServerIds(
         req.query.server_ids,
         req.query.metrics,
-        req.query.start,
-        req.query.end,
-        req.query.precision, function (err, metrics) {
-          if (err) {
-            return res.error(err);
-          }
-
-          return res.ok(metrics);
-        });
+        interval,
+        res.errorOrValue);
     },
 
     // create a metric
@@ -27,7 +29,7 @@ module.exports = function (models) {
         return res.error(info);
       }
 
-      models.Infos.create(info, function (err, info) {
+      models.Metrics.create(info, function (err, info) {
         if (err) {
           return res.error(err);
         }
