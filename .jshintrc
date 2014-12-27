@@ -90,6 +90,7 @@
         "ok",
         "deepEqual",
         "expect",
+        "request",
         "_",
         "t",
         "async",

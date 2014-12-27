@@ -9,8 +9,19 @@ module.exports = function (logger) {
     },
 
     elasticsearch: {
-      host: 'localhost:9200',
-      log: 'trace'
+      host: {
+        protocol: 'http',
+        host: 'localhost',
+        port: 9200,
+        auth: ''
+      },
+      log: 'trace',
+      index: {
+        name_prefix: 'monitoring',
+        document: {
+          type: 'measurement'
+        }
+      }
     },
 
     amqp: {

@@ -4,8 +4,10 @@
 Require this file inside tests
  */
 
+require('./.env.test');
 require('./bootstrap');
 global.t = require('chai').assert;
+global.request = require('supertest');
 
 // Extend
 t.isPrettyError = function (err, code, message) {
@@ -16,4 +18,15 @@ t.isPrettyError = function (err, code, message) {
   if (message) {
     t.include(err.message, message);
   }
+};
+
+/**
+ * @param  {Function} f(app, config, logger, es, amqp)
+ */
+t.getAPP = function getAPP(f) {
+  require('./server')(function (app, config, logger, es, amqp) {
+    // ensure that we are using test configuration
+    assert(!_.contains(config.amqp.host, 'rabbitmq.redsmin.com'));
+    assert(!_.contains(config.elasticsearch.host, 'elasticsearch.redsmin.com'));
+  });
 };
