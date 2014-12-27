@@ -1,40 +1,34 @@
 'use strict';
 
-module.exports = function (models) {
+module.exports = function (domain) {
   return {
     // create a measurement
     post: function (req, res) {
-      var info = models.Measurements.fromJSON(req.query.server_id, req.query.timestamp, req.body);
+      var measurement = domain.Measurement.fromJSON(req.body);
 
-      if (info instanceof PrettyError) {
-        return res.error(info);
+      if (measurement instanceof PrettyError) {
+        return res.error(measurement);
       }
 
-      models.Metrics.create(info, function (err, info) {
+      domain.Measurements.create(measurement, function (err) {
         if (err) {
           return res.error(err);
         }
-
-        res.ok(info);
+        res.status(201).end();
       });
     },
 
     // retrieve one (or more) measurements from a id
     get: function (req, res) {
-      // @todo marge start, end & precision inside an object
-      // rename start & end
-      var interval = models.DateRangeInterval.fromReq(req);
+      var interval = domain.DateRangeInterval.fromReq(req);
 
       if (interval instanceof PrettyError) {
         return res.error(interval);
       }
 
-
-
       // @todo check that id is an array of string (or a string -> convert it to an array)
       // @todo check that id is an array of string (or a string -> convert it to an array)
-
-      models.Metrics.findByServerIds(
+      domain.Measurements.findByIds(
         req.query.id,
         req.query.metrics,
         interval,

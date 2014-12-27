@@ -4,6 +4,7 @@
 module.exports = function (es, amqp, config) {
   assert(_.isString(config.elasticsearch.index.name_prefix));
   assert(_.isString(config.elasticsearch.index.document.type));
+  assert(amqp.publishExchange);
 
   var INDEX_NAME_PREFIX = config.elasticsearch.index.name_prefix;
   var INDEX_DOCUMENT_TYPE = config.elasticsearch.index.document.type;
@@ -15,35 +16,46 @@ module.exports = function (es, amqp, config) {
     /**
      * Create a measurement inside storage backend
      * @param  {Measurement} metric
-     * @param  {Function} f(PrettyError, res)
+     * @param  {Function} f(PrettyError)
      */
     create: function (measurement, f) {
       assert(measurement instanceof Measurement);
 
       // first write the measurement in ES
       es.create({
-        index: INDEX_NAME_PREFIX + measurement.id,
+        index: INDEX_NAME_PREFIX + '-' + measurement.id,
         type: INDEX_DOCUMENT_TYPE,
         body: measurement
       }, function (err, res) {
         if (err) {
+          return f(new PrettyError(500, 'An error occured will creating the measurement', err));
+        }
+
+        if (!_.isPlainObject(res) || !res.created) {
           return f(new PrettyError(500, 'Could not create the measurement', err));
         }
 
         // then publish it in AMQP
-        amqp.publish('monitoring', 'monitoring.new', this);
-        f(null, res);
+        // @todo add a callback to publish and only then, acknowledge the write
+        amqp.publishExchange.publish('monitoring.new', measurement, {
+          mandatory: true,
+          confirm: true,
+          exchange: 'monitoring'
+        }, function (err) {
+          console.log('ok', err);
+          f(null);
+        });
       });
 
     },
 
     // histogram aggregation: http://www.elasticsearch.com/guide/en/elasticsearch/reference/current/search-aggregations-bucket-histogram-aggregation.html
     // date histogram aggregation: http://www.elasticsearch.com/guide/en/elasticsearch/reference/current/search-aggregations-bucket-datehistogram-aggregation.html
-    findByServerIds: function (server_ids, metrics, dateRangeInterval, f) {
+    findByIds: function (ids, keys, dateRangeInterval, f) {
       assert(dateRangeInterval instanceof DateRangeInterval);
 
-      // toElasticField(server_ids, 'monitoring', function (err, indices) {
-      //   toElasticField(metrics, 'metrics.', function (err, metrics) {
+      // toElasticField(ids, 'monitoring', function (err, indices) {
+      //   toElasticField(keys, 'keys.', function (err, keys) {
       //     if (err) {
       //       return f(err);
       //     }

@@ -25,16 +25,13 @@ t.isPrettyError = function (err, code, message) {
  * @param  {Function} f(app, config, logger, es, amqp)
  */
 t.getAPP = function getAPP(f) {
-  function onRouteError(err, method, url) {
-    console.error(method + url, err); // @todo track that into stathat/starwarn & co
-  }
-
   ServerFactory(function (app, config, logger, es, amqp) {
     // ensure that we are using test configuration
-    assert(!_.contains(config.amqp.host, 'rabbitmq.redsmin.com'));
+    assert(_.contains(config.amqp.vhost, 'test'));
     assert(!_.contains(config.elasticsearch.host, 'elasticsearch.redsmin.com'));
+
     f(app, config, logger, es, amqp);
-  }, onRouteError, {
-    amqpError: false
+  }, _.noop, {
+    amqpError: true
   });
 };

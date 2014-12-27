@@ -40,7 +40,13 @@ module.exports = function (logger) {
       password: 'guest',
       host: 'localhost',
       port: 5672,
-      vhost: ''
+      vhost: '',
+
+      publish: {
+        // Publish new measurement on exchange
+        exchange: 'monitoring',
+        key_suffix: 'monitoring.new'
+      }
     }
   });
 };

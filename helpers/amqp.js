@@ -1,7 +1,11 @@
 'use strict';
 var amqp = require('amqp-dsl');
 
-module.exports = function (config, logger) {
+module.exports = function (config, logger, options) {
+  options = _.defaults(options, {
+    amqpError: false
+  });
+
   // (obj, f)
   // (f)
   return function connect(obj, f) {
@@ -12,10 +16,12 @@ module.exports = function (config, logger) {
 
     var conn = amqp.login(config);
 
-    conn.on('error', function (err) {
-      logger.error("AMQP ERROR", err);
-      throw err;
-    });
+    if (options.amqpError) {
+      conn.on('error', function defaultAMQPError(err) {
+        logger.error("AMQP ERROR", err);
+        throw err;
+      });
+    }
 
     (obj.queues || []).forEach(function (queueName) {
       conn.queue(queueName, {
