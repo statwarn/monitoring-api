@@ -1,3 +1,4 @@
+// http://json-schema.org/
 module.exports = {
   req: {
     'title': 'fromReq Schema',

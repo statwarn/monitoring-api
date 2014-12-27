@@ -1,7 +1,7 @@
 'use strict';
 require('../../bootstrap.test');
 
-var DateRangeInterval = require('./DateRangeInterval');
+var DateRangeInterval = require('./DateRangeInterval.ValueObject');
 
 describe('DateRangeInterval', function () {
   describe('DateRangeInterval.fromReq', function () {

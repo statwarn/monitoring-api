@@ -1,8 +1,7 @@
 'use strict';
 var moment = require('moment-range');
 /**
- * DateRangeInterval
- *
+ * DateRangeInterval value
  */
 
 /**
@@ -18,7 +17,7 @@ function DateRangeInterval(start_date, end_date, interval) {
   this._interval = interval;
 }
 
-DateRangeInterval.schema = require('./DateRangeInterval.schema');
+DateRangeInterval.schema = require('./DateRangeInterval.ValueObject.schema');
 
 /**
  * Create a new DateRangeInterval object from a query
