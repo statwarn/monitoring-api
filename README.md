@@ -2,7 +2,7 @@
 
 __baseUrl: monitoring.redsmin.com/api/v1__
 
-### POST /metrics
+### POST /measurement
 
 #### request
 
@@ -11,7 +11,7 @@ __param:__
 ```
 access_token: String
 timestamp: Number (optional)  (format ISO 8601)
-server_id: String
+id: String id
 ```
 
 redis info of a server (json):
@@ -38,7 +38,7 @@ Internal Error 500: Internal server error
 Gateway Timeout 504: timeout
 ```
 
-### GET /metrics
+### GET /measurement
 
 example of metric : instantaneous_ops_per_sec
 
@@ -80,7 +80,7 @@ Internal Error 500: Internal server error
 Gateway Timeout 504: timeout
 ```
 
-### DEL /metrics
+### DEL /measurement
 
 Remove every metrics related to on or more `server_ids`. This route will be called each time a user remove its account or its own server.
 
