@@ -29,206 +29,202 @@
     }
 },
 
+- Index name : "monitoring-:server_id"
+- document : stocker le JSON retourné par redis info.
 
 PUT /_template/tmpl_monitoring
 
-```
 {
-    "template" : "monitoring-*",
-    "settings" : {
-        "number_of_shards": 5, // <-- à modifier 
-        "number_of_replicas": 1 
-    },
-    "mappings": {
-        "info": { // <-- type de mapping (à envoyer au moment de l'insertion dans ES)
-          "_timestamp": {
-            "enabled": "true",
-            "path": "generic.created_at" // <- à modifier
-          },
-          "_id": {
-            "index": "not_analyzed",
-            "store": "false",
-            "path": "generic.id"
-          },
-          "_all": {
-            "enabled": "false"
-          },
-          "_source": {
-            "enabled": "true"
-          },
-          "dynamic": "true",
+  "template": "monitoring-*",
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 1
+  },
+  "mappings": {
+    "info": {
+      "_timestamp": {
+        "enabled": "true",
+        "path": "created_at"
+      },
+      "_all": {
+        "enabled": "false"
+      },
+      "_source": {
+        "enabled": "true"
+      },
+      "dynamic": "strict",
+      "properties": {
+        "server_id": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "created_at": {
+          "type": "date",
+          "index": "not_analyzed"
+        },
+        "metrics": {
+     "type": "object",
           "properties": {
-            "generic": {
+            "uptime_in_seconds": {
+              "type": "date",
+              "index": "not_analyzed"
+            },
+            "connected_clients": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "client_longest_output_list": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "client_biggest_input_buf": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "blocked_clients": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "used_memory": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "used_memory_rss": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "used_memory_peak": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "used_memory_lua": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "mem_fragmentation_ratio": {
+              "type": "float",
+              "index":"not_analyzed"
+            },
+            "rdb_changes_since_last_save": {
+              "type": "date",
+              "index": "not_analyzed"
+            },
+            "rdb_last_save_time": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "rdb_last_bgsave_time_sec": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "rdb_current_bgsave_time_sec": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "aof_rewrite_in_progress": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "aof_rewrite_scheduled": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "aof_last_rewrite_time_sec": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "aof_current_rewrite_time_sec": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "total_connections_received": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "total_commands_processed": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "instantaneous_ops_per_sec": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "rejected_connections": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "expired_keys": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "evicted_keys": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "keyspace_hits": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "keyspace_misses": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "pubsub_channels": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "pubsub_patterns": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "latest_fork_usec": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "connected_slaves": {
+              "type": "integer",
+              "index": "not_analyzed"
+            },
+            "used_cpu_sys": {
+              "type": "float",
+              "index": "not_analyzed"
+            },
+            "used_cpu_user": {
+              "type": "float",
+              "index": "not_analyzed"
+            },
+            "commands": {
               "type": "object",
               "properties": {
-                "id": {
-                  "type": "string",
-                  "index": "not_analyzed"
-                },
-                "type": {
-                  "type": "string",
-                  "index": "not_analyzed"
-                },
-                "title": {
-                  "type": "string",
-                  "index": "analyzed",
-                  "index_analyzer": "social_analyzer",
-                  "search_analyzer": "search_social_analyzer",
-                  "norms": {
-                    "enabled": false
-                  }
-                },
-                "content": {
-                  "type": "string",
-                  "index": "analyzed",
-                  "index_analyzer": "social_analyzer",
-                  "search_analyzer": "search_social_analyzer",
-                  "norms": {
-                    "enabled": false
-                  },
-                  "fields": {
-                    "urls": {
-                      "type": "string",
-                      "index": "analyzed",
-                      "analyzer": "url_analyzer",
-                      "store": "yes",
-                      "norms": {
-                        "enabled": false
-                      }
-                    }
-                  }
-                },
-                "content_truncated": {
-                  "type": "string",
-                  "index": "analyzed",
-                  "analyzer": "tag_analyzer",
-                  "norms": {
-                    "enabled": false
-                  }
-                },
-                "source": {
-                  "type": "string",
-                  "index": "not_analyzed"
-                },
-                "geo": {
-                  "type": "geo_point",
-                  "lat_lon": "true",
-                  "fielddata": {
-                    "format": "compressed",
-                    "precision": "1km"
-                  },
-                  "geohash": true,
-                  "geohash_prefix": true,
-                  "geohash_precision": 10
-                },
-                "link": {
-                  "type": "string",
-                  "index": "no"
-                },
-                "lang": {
-                  "type": "string",
-                  "index": "not_analyzed"
-                },
-                "created_at": {
-                  "type": "date",
-                  "index": "not_analyzed"
-                },
-                "sentiment": {
-                  "type": "string",
-                  "index": "not_analyzed"
-                },
-                "author": {
-                  "type": "object",
+                "*": {
                   "properties": {
-                    "username": {
-                      "type": "string",
+                    "calls": {
+                      "type:": "integer",
                       "index": "not_analyzed"
                     },
-                    "name": {
-                      "type": "string",
+                    "usec": {
+                      "type:": "integer",
                       "index": "not_analyzed"
                     },
-                    "id": {
-                      "type": "string",
+                    "usec_per_call": {
+                      "type:": "float",
                       "index": "not_analyzed"
-                    },
-                    "avatar": {
-                      "type": "string",
-                      "index": "no"
-                    },
-                    "link": {
-                      "type": "string",
-                      "index": "no"
                     }
                   }
                 }
               }
             },
-            "twitter_source": {
+            "databases": {
               "type": "object",
               "properties": {
-                "author": {
-                  "type": "object",
+                "*": {
                   "properties": {
-                    "followers_count": {
-                      "type": "long"
-                    },
-                    "description": {
-                      "type": "string",
-                      "index": "analyzed",
-                      "index_analyzer": "social_analyzer",
-                      "search_analyzer": "search_social_analyzer",
-                      "norms": {
-                        "enabled": false
-                      }
-                    }
-                  }
-                },
-                "retweeted_status": {
-                  "type": "object",
-                  "properties": {
-                    "id_str": {
-                      "type": "string",
+                    "keys": {
+                      "type": "integer",
                       "index": "not_analyzed"
                     },
-                    "retweet_count": {
-                      "type": "long"
-                    },
-                    "user": {
-                      "type": "object",
-                      "properties": {
-                        "screen_name": {
-                          "type": "string",
-                          "index": "not_analyzed"
-                        },
-                        "name": {
-                          "type": "string",
-                          "index": "not_analyzed"
-                        },
-                        "id_str": {
-                          "type": "string",
-                          "index": "not_analyzed"
-                        },
-                        "profile_image_url": {
-                          "type": "string",
-                          "index": "no"
-                        }
-                      }
-                    }
-                  }
-                },
-                "user_mentions": {
-                  "properties": {
-                    "screen_name": {
-                      "type": "string",
-                      "index": "not_analyzed"
-                    },
-                    "name": {
-                      "type": "string",
-                      "index": "not_analyzed"
-                    },
-                    "id_str": {
-                      "type": "string",
+                    "expires": {
+                      "type": "integer",
                       "index": "not_analyzed"
                     }
                   }
@@ -239,8 +235,8 @@ PUT /_template/tmpl_monitoring
         }
       }
     }
+  }
 }
-```
 
 5 shards = 3 serveurs
 
