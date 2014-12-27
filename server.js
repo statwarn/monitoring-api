@@ -6,6 +6,11 @@ var config = require('./config')(logger);
 var connectAndCheckES = require('./helpers/elasticsearch')(config.elasticsearch);
 var connectAndCheckAMQP = require('./helpers/amqp')(config.amqp, logger);
 
+/**
+ 
+ * @param  {Function} f(app, config, logger, es, amqp)
+ * @param  {Function} fRouteError(err, method, url)
+ */
 function getConfiguredAPP(f, fRouteError) {
   async.parallel({
     es: connectAndCheckES,
@@ -25,7 +30,7 @@ function getConfiguredAPP(f, fRouteError) {
   });
 }
 
-function defaultAppHandler(app, config, logger, es, amqp) {
+function defaultAppHandler(app, config, logger /*, es, amqp */ ) {
   app.listen(config.api.port, function () {
     logger.info('API listening on ' + config.api.port);
   });
