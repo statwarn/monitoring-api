@@ -1,11 +1,12 @@
 'use strict';
 var IS_PROD = process.env.NODE_ENV === "production";
 
-function PrettyError(code, message, cause) {
+function PrettyError(code, message, cause, details) {
   this.message = message;
   this.code = code;
   this.stack = _cleanStack(new Error().stack);
   this.cause = cause || null;
+  this.details = details || null;
 }
 
 function _cleanStack(stack) {
@@ -37,6 +38,16 @@ function ErrorToJSON(err) {
 
 PrettyError.ErrorToJSON = ErrorToJSON;
 
+PrettyError.fromValidation = function (validationError) {
+
+  var errors = validationError.errors.map(function (error) {
+    // remove stack for production envs.
+    return new PrettyError(error.code, error.message, IS_PROD ? null : error);
+  });
+
+  return new PrettyError(400, 'Validation error', null, errors);
+};
+
 PrettyError.prototype.toJSON = function () {
   var o = {
     code: this.code,
@@ -46,6 +57,10 @@ PrettyError.prototype.toJSON = function () {
   if (!IS_PROD) {
     o.stack = this.stack;
     o.cause = ErrorToJSON(this.cause);
+  }
+
+  if (this.details) {
+    o.details = this.details.map(ErrorToJSON);
   }
 
   return o;
