@@ -29,8 +29,11 @@
     "express": "^4.10.4",
     "lodash": "^2.4.1",
     "mocha": "^2.0.1",
+    "moment-range": "^1.0.5",
     "node-redis": "^0.1.7",
     "redis": "^0.12.1",
+    "tv4": "^1.1.5",
+    "tv4-formats": "^0.5.1",
     "winston": "^0.8.3"
   },
   "devDependencies": {

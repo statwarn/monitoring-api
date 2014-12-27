@@ -91,6 +91,7 @@
         "deepEqual",
         "expect",
         "_",
+        "t",
         "async",
         "assert",
         "PrettyError",
