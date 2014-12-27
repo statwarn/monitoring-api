@@ -39,10 +39,11 @@ function ErrorToJSON(err) {
 PrettyError.ErrorToJSON = ErrorToJSON;
 
 PrettyError.fromValidation = function (validationError) {
-
   var errors = validationError.errors.map(function (error) {
     // remove stack for production envs.
-    return new PrettyError(error.code, error.message, IS_PROD ? null : error);
+    var err = new PrettyError(error.code, error.message, IS_PROD ? null : error);
+    err.dataPath = error.dataPath;
+    return err;
   });
 
   return new PrettyError(400, 'Validation error', null, errors);
@@ -63,6 +64,10 @@ PrettyError.prototype.toJSON = function () {
     o.details = this.details.map(ErrorToJSON);
   }
 
+  if (this.dataPath) {
+    o.dataPath = this.dataPath;
+  }
+
   return o;
 };
 
@@ -71,6 +76,10 @@ PrettyError.prototype.toError = function () {
   err.code = this.code;
   err.stack = this.stack;
   return err;
+};
+
+PrettyError.prototype.toString = function () {
+  return JSON.stringify(this.toJSON(), null, 2);
 };
 
 module.exports = PrettyError;
