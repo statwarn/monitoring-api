@@ -3,23 +3,25 @@ require('./bootstrap');
 
 var logger = require('./helpers/logger');
 var config = require('./config')(logger);
-var es = require('./helpers/elasticsearch')(config.elasticsearch);
-var amqp = require('./helpers/amqp')(config.amqp, logger);
+var connectAndCheckES = require('./helpers/elasticsearch')(config.elasticsearch);
+var connectAndCheckAMQP = require('./helpers/amqp')(config.amqp, logger);
 
 function getConfiguredAPP(f, fRouteError) {
   async.parallel({
-    es: es,
-    amqp: amqp
+    es: connectAndCheckES,
+    amqp: connectAndCheckAMQP
   }, function (err, results) {
     if (err) {
       logger.error(err);
       throw err;
     }
 
+    var es = results.es;
+    var amqp = results.amqp;
+
     // configure the api
     var app = require('./api')(config, logger, es, amqp.connection, fRouteError);
     f(app, config, logger, es, amqp);
-
   });
 }
 
