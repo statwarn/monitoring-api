@@ -2,6 +2,6 @@
 
 module.exports = function (models) {
   return {
-    metrics: require('./metrics')(models)
+    measurements: require('./measurements')(models)
   };
 };
