@@ -6,6 +6,7 @@ Require this file inside tests
 
 require('./.env.test');
 require('./bootstrap');
+var ServerFactory = require('./server');
 global.t = require('chai').assert;
 global.request = require('supertest');
 
@@ -24,7 +25,7 @@ t.isPrettyError = function (err, code, message) {
  * @param  {Function} f(app, config, logger, es, amqp)
  */
 t.getAPP = function getAPP(f) {
-  require('./server')(function (app, config, logger, es, amqp) {
+  ServerFactory(function (app, config, logger, es, amqp) {
     // ensure that we are using test configuration
     assert(!_.contains(config.amqp.host, 'rabbitmq.redsmin.com'));
     assert(!_.contains(config.elasticsearch.host, 'elasticsearch.redsmin.com'));

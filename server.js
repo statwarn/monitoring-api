@@ -7,8 +7,10 @@ var es = require('./helpers/elasticsearch')(config.elasticsearch);
 var amqp = require('./helpers/amqp')(config.amqp, logger);
 
 function getConfiguredAPP(f, fRouteError) {
-  // first connect to AMQP
-  amqp({}, function onConnected(err, amqp) {
+  async.parallel({
+    es: es,
+    amqp: amqp
+  }, function (err, results) {
     if (err) {
       logger.error(err);
       throw err;
@@ -17,6 +19,7 @@ function getConfiguredAPP(f, fRouteError) {
     // configure the api
     var app = require('./api')(config, logger, es, amqp.connection, fRouteError);
     f(app, config, logger, es, amqp);
+
   });
 }
 
