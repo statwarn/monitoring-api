@@ -4,8 +4,8 @@ var express = require('express');
 var bodyParser = require('body-parser');
 
 module.exports = function (config, logger, es, amqp, fOnError) {
-  var models = require('./models')(es, amqp, PrettyError);
-  var routes = require('./routes')(models, logger, fOnError);
+  var domain = require('./domain')(es, amqp, config);
+  var routes = require('./routes')(logger, es, amqp, fOnError, domain);
 
   var app = express();
 
