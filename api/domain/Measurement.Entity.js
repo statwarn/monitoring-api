@@ -3,13 +3,13 @@
 /**
  * Measurement entity
  * @param {String} id
- * @param {String} timestamp
+ * @param {Number} timestamp (timestamp in UTC)
  * @param {Object} data      pair of key/values
  * @param {Object|Null} metadata  pair of key/values
  */
 function Measurement(id, timestamp, data, metadata) {
   assert(_.isString(id));
-  assert(_.isString(timestamp));
+  assert(_.isNumber(timestamp));
   assert(_.isPlainObject(data));
   metadata && assert(_.isPlainObject(metadata));
   !metadata && assert(_.isNull(metadata));

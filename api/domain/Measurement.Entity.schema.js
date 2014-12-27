@@ -12,8 +12,8 @@ module.exports = {
     'timestamp': {
       'title': 'Measurement timestamp',
       'description': 'Timestamp string in ISO 8601 Extended Format',
-      'type': 'string',
-      'format': 'date-time'
+      'type': 'number',
+      'minimum': 0
     },
 
     'data': {

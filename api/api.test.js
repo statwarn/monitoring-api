@@ -26,7 +26,7 @@ describe('Monitoring API server', function () {
         .post('/api/v1/measurements')
         .send({
           id: 'plop',
-          timestamp: new Date().toISOString(),
+          timestamp: +new Date(),
           data: {
             a: 1,
             b: 2
