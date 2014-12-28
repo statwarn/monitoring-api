@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function (es, amqp, config) {
+module.exports = function (es, amqp, config, template) {
     return {
         // Entities
         // entities can only require other entities
@@ -11,7 +11,7 @@ module.exports = function (es, amqp, config) {
         Measurements: require('./Measurement.Repository')(es, amqp, config),
 
         // Value Object
-        DateRangeInterval: require('./DateRangeInterval.ValueObject')(es, amqp, config),
-        Template: require('./Template.ValueObject')(es, amqp, config)
+        DateRangeInterval: require('./DateRangeInterval.ValueObject')(),
+        Template: require('./Template.ValueObject')(es, config, template)
     };
 };

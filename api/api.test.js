@@ -30,6 +30,8 @@ describe('Monitoring API server', function () {
           timestamp: Date.now(),
           data: {
             a: Math.round(Math.random() * 10),
+            'float': 1.234,
+            'floats': "1.234",
             b: 'plop'
           }
         })

@@ -2,7 +2,7 @@
 require(!process.env.TEST ? './bootstrap' : './bootstrap.test');
 var logger = require('./helpers/logger');
 var config = require('./config')(logger);
-
+var template = require('./template')(config);
 /**
  
  * @param  {Function} f(app, config, logger, es, amqp)
@@ -32,7 +32,7 @@ function getConfiguredAPP(f, fRouteError, options) {
     }, function (exchange) {
       amqp.publishExchange = exchange;
       // configure the api
-      var app = require('./api')(config, logger, es, amqp, fRouteError);
+      var app = require('./api')(config, logger, es, amqp, template, fRouteError);
       _.defer(f, app, config, logger, es, amqp);
     });
   });
