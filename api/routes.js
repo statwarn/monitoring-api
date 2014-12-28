@@ -9,5 +9,7 @@ module.exports = function (logger, es, amqp, fOnError, domain) {
 
     app.post('/api/v1/measurements', controllers.measurements.post);
     app.get('/api/v1/measurements', controllers.measurements.get);
+
+    app.all('/internal/templates/setup', controllers.templates.setup);
   };
 };

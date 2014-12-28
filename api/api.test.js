@@ -25,15 +25,21 @@ describe('Monitoring API server', function () {
       request(app)
         .post('/api/v1/measurements')
         .send({
-          id: 'plop',
-          timestamp: +new Date(),
+          // specify the time-serie id
+          id: 'my-time-serie',
+          timestamp: Date.now(),
           data: {
-            a: 1,
-            b: 2
+            a: Math.round(Math.random() * 10),
+            b: 'plop'
           }
         })
         .expect(201)
         .end(done);
     });
+  });
+
+  describe('GET /api/v1/measurements', function () {
+    // https://redsmintest.west-eu.azr.facetflow.io/monitoring-testid/measurement/_search?size=10&from=0
+    // https://redsmintest.west-eu.azr.facetflow.io/monitoring-testid/_mapping
   });
 });

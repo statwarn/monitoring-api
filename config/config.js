@@ -28,6 +28,10 @@ module.exports = function (logger) {
       // Number — Milliseconds that a dead connection will wait before attempting to revive itself.
       deadTimeout: 1000,
       index: {
+        settings: {
+          number_of_shards: 1,
+          number_of_replicas: 1
+        },
         name_prefix: 'monitoring',
         document: {
           type: 'measurement'

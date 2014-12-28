@@ -25,8 +25,9 @@ module.exports = function (es, amqp, config) {
       es.create({
         index: INDEX_NAME_PREFIX + '-' + measurement.id,
         type: INDEX_DOCUMENT_TYPE,
-        body: measurement
+        body: measurement.toDocument()
       }, function (err, res) {
+        console.log(res, err);
         if (err) {
           return f(new PrettyError(500, 'An error occured will creating the measurement', err));
         }

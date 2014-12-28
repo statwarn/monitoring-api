@@ -1,16 +1,17 @@
 'use strict';
 
 module.exports = function (es, amqp, config) {
-  return {
-    // Entities
-    // entities can only require other entities
-    Measurement: require('./Measurement.Entity'),
+    return {
+        // Entities
+        // entities can only require other entities
+        Measurement: require('./Measurement.Entity'),
 
-    // Repositories
-    // repository can require es, amqp and other entities
-    Measurements: require('./Measurement.Repository')(es, amqp, config),
+        // Repositories
+        // repository can require es, amqp and other entities
+        Measurements: require('./Measurement.Repository')(es, amqp, config),
 
-    // Value Object
-    DateRangeInterval: require('./DateRangeInterval.ValueObject')
-  };
+        // Value Object
+        DateRangeInterval: require('./DateRangeInterval.ValueObject')(es, amqp, config),
+        Template: require('./Template.ValueObject')(es, amqp, config)
+    };
 };
