@@ -7,13 +7,14 @@
  * @param {Number} timestamp
  *                           timestamp in UTC
  * @param {Object} data      pair of key/values
- * @param {Object} metadata  pair of key/values
+ * @param {Object|Null} metadata  pair of key/values
  */
 function Measurement(id, timestamp, data, metadata) {
   assert(_.isString(id));
   assert(_.isNumber(timestamp));
   assert(_.isPlainObject(data));
-  assert(_.isPlainObject(metadata));
+  metadata && assert(_.isPlainObject(metadata));
+  !metadata && assert(_.isNull(metadata));
 
   this.id = id;
   this.timestamp = timestamp;
@@ -35,7 +36,7 @@ Measurement.fromJSON = function (json) {
   }
 
   return _.validate(json, Measurement.schema, function fallback(json) {
-    return new Measurement(json.id, json.timestamp, json.data, json.metadata || {});
+    return new Measurement(json.id, json.timestamp, json.data, json.metadata || null);
   });
 };
 
