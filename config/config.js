@@ -28,6 +28,7 @@ module.exports = function (logger) {
       // Number — Milliseconds that a dead connection will wait before attempting to revive itself.
       deadTimeout: 1000,
       index: {
+        template: 'defined/redsmin.template.js',
         settings: {
           number_of_shards: 1,
           number_of_replicas: 1

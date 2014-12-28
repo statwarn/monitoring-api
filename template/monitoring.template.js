@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = {
   "name": "{{INDEX_NAME_PREFIX}}_template",
   "template": "{{INDEX_NAME_PREFIX}}-*",
@@ -24,11 +26,11 @@ module.exports = {
         // The _source field is an automatically generated field that stores the actual JSON that was used as the indexed document. It is not indexed (searchable), just stored. When executing "fetch" requests, like get or search, the _source field is returned by default.
         "enabled": "true"
       },
-      "dynamic": "true",
+      // http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/mapping-dynamic-mapping.html
+      "dynamic": "strict",
       // http://www.elasticsearch.org/guide/en/elasticsearch/guide/current/custom-dynamic-mapping.html
       // With dynamic_templates, you can take complete control over the mapping that is generated for newly detected fields. You can even apply a different mapping depending on the field name or datatype.
       "dynamic_templates": [],
-
       "properties": {
         "timestamp": {
           "type": "date",
@@ -36,10 +38,12 @@ module.exports = {
         },
         "data": {
           "type": "object",
+          "dynamic": true,
           "properties": {}
         },
         "metadata": {
           "type": "object",
+          "dynamic": true,
           "properties": {}
         }
       }
