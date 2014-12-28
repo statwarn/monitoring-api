@@ -1,5 +1,5 @@
 'use strict';
-require('./bootstrap');
+require(!process.env.TEST ? './bootstrap' : './bootstrap.test');
 var logger = require('./helpers/logger');
 var config = require('./config')(logger);
 
