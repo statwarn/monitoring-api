@@ -1,3 +1,17 @@
+# Setup
+
+```
+npm install
+```
+
+# Setup index template and document mapping
+
+```
+# edit `ELASTICSEARCH_INDEX_TEMPLATE` configuration parameter
+# setup template
+curl -XGET localhost:9000/internal/templates/setup
+```
+
 # API
 
 __baseUrl: monitoring.redsmin.com/api/v1__

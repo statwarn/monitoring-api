@@ -4,7 +4,7 @@ var moment = require('moment-range');
  * DateRangeInterval value
  */
 
-module.exports = function (es, amqp, config) {
+module.exports = function () {
   /**
    * [DateRangeInterval description]
    * @param {Date} start_date

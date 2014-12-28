@@ -1,5 +1,5 @@
 'use strict';
-
+// https://github.com/tj/supertest/blob/master/test/supertest.js
 require('../bootstrap.test');
 var app, es, amqp;
 
