@@ -19,7 +19,8 @@ module.exports = {
     'data': {
       'title': 'Measurement data',
       'description': '',
-      'type': 'object'
+      'type': 'object',
+      'format': 'single-level-object'
     },
 
     'metadata': {

@@ -1,8 +1,9 @@
 {
   "name": "monitoring-api",
   "version": "0.0.0",
-  "description": "monitoring api for redsmin",
+  "description": "monitoring api for redsmin/statwarn",
   "main": "server.js",
+  "private": true,
   "scripts": {
     "test": "mocha -t 5000 -R spec **/**.test.js",
     "test-watch": "mocha -w -G -t 5000 -R spec **/**.test.js"
@@ -33,6 +34,7 @@
     "moment-range": "^1.0.5",
     "node-redis": "^0.1.7",
     "redis": "^0.12.1",
+    "requestretry": "^1.2.1",
     "tv4": "^1.1.5",
     "tv4-formats": "^0.5.1",
     "winston": "^0.8.3"

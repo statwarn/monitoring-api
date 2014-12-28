@@ -6,6 +6,16 @@ tv4.addFormat({
   'enum': function (value, params) {
     assert(_.isArray(params.values));
     return _.contains(params.values, value) ? null : '' + params.title + ' should be one of the following values ' + params.values.join(', ');
+  },
+  'single-level-object': function (obj) {
+    var isSingleLevel = true;
+    _.forOwn(obj, function (value, key) {
+      if (_.isPlainObject(value)) {
+        isSingleLevel = false;
+        return false;
+      }
+    });
+    return isSingleLevel ? null : 'Only single-level object are allowed';
   }
 });
 /**

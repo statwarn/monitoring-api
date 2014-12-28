@@ -23,18 +23,16 @@ __baseUrl: monitoring.redsmin.com/api/v1__
 __param:__
 
 ```
-access_token: String
 timestamp: Number (optional)  (format ISO 8601)
 id: String id
 ```
 
-redis info of a server (json):
+(json):
 
 ```
 {
   "redis_version": "2.8.17"
-  "redis_git_sha1": "00000000"
-  "redis_git_dirty": "0"
+  "redis_git_dirty": 0
   ...
 }
 ```
