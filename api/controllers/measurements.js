@@ -20,20 +20,43 @@ module.exports = function (domain) {
 
     // retrieve one (or more) measurements from a id
     get: function (req, res) {
-      var interval = domain.DateRangeInterval.fromReq(req);
+      var dateRangeInterval = domain.DateRangeInterval.fromReq(req);
 
-      if (interval instanceof PrettyError) {
-        return res.error(interval);
+      if (dateRangeInterval instanceof PrettyError) {
+        return res.error(dateRangeInterval);
       }
 
-      // @todo check that id is an array of string (or a string -> convert it to an array)
-      // @todo check that id is an array of string (or a string -> convert it to an array)
+      if (!req.query.id && !req.query.ids) {
+        return res.error(new PrettyError('id or ids must be defined'));
+      }
+
+      if (!req.query.field && !req.query.fields) {
+        return res.error(new PrettyError('field or fields must be defined'));
+      }
+
+      var ids = convertToArray(req.query.id || req.query.ids);
+      var fields = convertToArray(req.query.field || req.query.fields);
+
       domain.Measurements.findByIds(
-        req.query.id,
-        req.query.metrics,
-        interval,
+        ids,
+        fields,
+        dateRangeInterval,
         res.errorOrValue);
     },
 
   };
 };
+
+
+function convertToArray(value) {
+  if (_.isString(value)) {
+    return [value];
+  }
+
+  if (_.isArray(value)) {
+    return value;
+  }
+
+  // invalid value
+  return [];
+}

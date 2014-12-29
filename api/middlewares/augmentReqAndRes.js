@@ -11,7 +11,7 @@ module.exports = function (onError) {
       return req.params[param] || req.param(param);
     };
 
-    req.resOrValue = function (err, value) {
+    res.errorOrValue = function (err, value) {
       if (err) {
         return res.error(err);
       }

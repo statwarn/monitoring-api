@@ -1,7 +1,7 @@
 'use strict';
 
 // MeasurementRepository
-module.exports = function (es, amqp, config) {
+module.exports = function (es, amqp, config, DateRangeInterval) {
   assert(_.isString(config.elasticsearch.index.name_prefix));
   assert(_.isString(config.elasticsearch.index.document.type));
   assert(amqp.publishExchange);
@@ -10,7 +10,10 @@ module.exports = function (es, amqp, config) {
   var INDEX_DOCUMENT_TYPE = config.elasticsearch.index.document.type;
 
   var Measurement = require('./Measurement.Entity');
-  var DateRangeInterval = require('./DateRangeInterval.ValueObject');
+
+  function makeIndexFromId(id) {
+    return INDEX_NAME_PREFIX + '-' + id;
+  }
 
   return {
     /**
@@ -23,11 +26,10 @@ module.exports = function (es, amqp, config) {
 
       // first write the measurement in ES
       es.create({
-        index: INDEX_NAME_PREFIX + '-' + measurement.id,
+        index: makeIndexFromId(measurement.id),
         type: INDEX_DOCUMENT_TYPE,
         body: measurement.toDocument()
       }, function (err, res) {
-        console.log(res, err);
         if (err) {
           return f(new PrettyError(500, 'An error occured will creating the measurement', err));
         }
@@ -37,7 +39,6 @@ module.exports = function (es, amqp, config) {
         }
 
         // then publish it in AMQP
-        // @todo add a callback to publish and only then, acknowledge the write
         amqp.publishExchange.publish('monitoring.new', measurement, {
           mandatory: true,
           confirm: true,
@@ -50,60 +51,56 @@ module.exports = function (es, amqp, config) {
 
     // histogram aggregation: http://www.elasticsearch.com/guide/en/elasticsearch/reference/current/search-aggregations-bucket-histogram-aggregation.html
     // date histogram aggregation: http://www.elasticsearch.com/guide/en/elasticsearch/reference/current/search-aggregations-bucket-datehistogram-aggregation.html
-    findByIds: function (ids, keys, dateRangeInterval, f) {
+    findByIds: function (ids, fields, dateRangeInterval, f) {
+      console.log(ids, fields, dateRangeInterval);
+      assert(_.isArray(ids));
+      assert(_.isArray(fields));
       assert(dateRangeInterval instanceof DateRangeInterval);
 
-      // toElasticField(ids, 'monitoring', function (err, indices) {
-      //   toElasticField(keys, 'keys.', function (err, keys) {
-      //     if (err) {
-      //       return f(err);
-      //     }
-      //     es.search({
-      //       indices: indices,
-      //       type: 'metric',
-      //       fields: ['server_id', 'timestamp'].concat(metrics),
-      //       body: {
-      //         "aggs": {
-      //           "volume": {
-      //             "date_histogram": {
-      //               "field": "timestamp",
-      //               "min_doc_count": 0,
-      //               "interval": precision,
-      //               "extended_bounds": {
-      //                 "min": new Date(start).getTime(),
-      //                 "max": new Date(end).getTime()
-      //               }
-      //             }
-      //           }
-      //         }
-      //       }
-      //     }, function (err, res) {
-      //       if (err) {
-      //         return f(500, 'could not get the metrics', err);
-      //       }
+      es.search({
+        indices: ids.map(makeIndexFromId),
+        type: INDEX_DOCUMENT_TYPE,
+        fields: fields,
+        // search_type: 'count',
 
-      //       // function (err, metrics) {
-      //       //   if (err) {
-      //       //     return f(new PrettyError(500, 'cannot convert response to metrics', err));
-      //       //   }
-      //       //   return f(null, res.hits.hits);
-      //       // });
-      //     });
-      //   });
-      // });
+        body: {
+          // size=0 to not show search hits because we only want to see the aggregation results in the response.
+          size: 0,
+
+          query: {
+            range: {
+              timestamp: {
+                from: dateRangeInterval.start_ts,
+                to: dateRangeInterval.end_ts
+              }
+            }
+          },
+          aggs: {
+            volume: {
+              date_histogram: {
+                field: 'timestamp',
+                min_doc_count: 0,
+                interval: dateRangeInterval.interval
+              },
+              aggs: {
+                'used_memory': {
+                  avg: {
+                    field: 'used_memory'
+                  }
+                }
+              }
+            }
+          }
+        }
+      }, function (err, res) {
+        console.log(err, res);
+
+        if (err) {
+          return f(new PrettyError('plop', 'plop', err));
+        }
+
+        return f(null, res);
+      });
     }
   };
 };
-
-// function toElasticField(field, text, f) {
-//   function iterator(field, cb) {
-//     return cb(null, text + field);
-//   }
-
-//   async.map(field.split(','), iterator, function (err, fields) {
-//     if (err) {
-//       return f(new PrettyError(400, 'at least one ' + field + ' is invalid', err));
-//     }
-//     f(null, fields);
-//   });
-// }

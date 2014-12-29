@@ -57,12 +57,12 @@ example of metric : instantaneous_ops_per_sec
 __params:__
 
 ```
-metrics: String (e.g. a,b)
-server_ids: String (e.g. 1,2,3)
-access_token: String
-start_date_ts: Number
-end_date_ts: Number
-precision: String (e.g. 1d,1h,1m)
+fields: String (e.g. ['data.a', 'data.b'])
+ids: String (e.g. ['17954235-926d-47af-8547-8b094556dbd6', '33436bc1-5d55-44d8-9cb1-19d17823668c'])
+start_ts: Number (UTC)
+end_ts: Number (UTC)
+interval: String (e.g.  year ,quarter ,month ,week ,day ,hour ,minute, second)
+agg: sum, avg, min, max, count (default. count)
 ```
 __response__
 
