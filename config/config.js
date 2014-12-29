@@ -17,7 +17,10 @@ module.exports = function (logger) {
       },
 
       // String, String[], Object, Object[], Constructor — Unless a constructor is specified, this sets the output settings for the bundled logger. See the section on configuring-logging[logging] for more information.
-      log: 'debug',
+      // error, warning, info, debug, trace
+      // Event fired for "info" level log entries, which usually describe what a client is doing (sniffing etc)
+      // Event fired for "debug" level log entries, which will describe requests sent,
+      log: 'info',
 
       // Integer — How many times should the client try to connect to other nodes before returning a ConnectionFault error.
       maxRetries: 5,
