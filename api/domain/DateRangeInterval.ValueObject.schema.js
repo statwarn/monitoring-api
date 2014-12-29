@@ -12,19 +12,17 @@ module.exports = {
         'format': 'enum',
         'values': ['year', 'quarter', 'month', 'week', 'day', 'hour', 'minute', 'second']
       },
-      'start_date': {
+      'start_ts': {
         'title': 'date range start date',
         'description': '',
-        'type': 'string',
-        'format': 'date-time'
+        'type': 'number'
       },
-      'end_date': {
-        'title': 'date range start date',
+      'end_ts': {
+        'title': 'date range end date',
         'description': '',
-        'type': 'string',
-        'format': 'date-time'
+        'type': 'number'
       }
     },
-    'required': ['interval', 'start_date', 'end_date']
+    'required': ['interval', 'start_ts', 'end_ts']
   }
 };

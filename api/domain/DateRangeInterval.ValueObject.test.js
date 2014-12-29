@@ -1,7 +1,7 @@
 'use strict';
 require('../../bootstrap.test');
 
-var DateRangeInterval = require('./DateRangeInterval.ValueObject');
+var DateRangeInterval = require('./DateRangeInterval.ValueObject')();
 
 describe('DateRangeInterval', function () {
   describe('DateRangeInterval.fromReq', function () {
@@ -31,11 +31,15 @@ describe('DateRangeInterval', function () {
     it('should return an interval if the interval is valid', function (done) {
       var dateRangeInterval = DateRangeInterval.fromReq({
         query: {
-          interval: 'hour',
-          start_date: new Date().toISOString(),
-          end_date: new Date().toISOString(),
+          interval: 'minute',
+          start_ts: String(+new Date() - 3600 * 60 * 1000), // -1 hour
+          end_ts: String(+new Date()), // we convert *_ts to string because it will always be sent as string
         }
       });
+
+      if (dateRangeInterval instanceof PrettyError) {
+        console.error(dateRangeInterval);
+      }
 
       t.ok(dateRangeInterval instanceof DateRangeInterval, 'should be an instance of interval is valid');
       done();
