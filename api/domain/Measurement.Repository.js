@@ -51,8 +51,14 @@ module.exports = function (es, amqp, config, DateRangeInterval) {
 
     // histogram aggregation: http://www.elasticsearch.com/guide/en/elasticsearch/reference/current/search-aggregations-bucket-histogram-aggregation.html
     // date histogram aggregation: http://www.elasticsearch.com/guide/en/elasticsearch/reference/current/search-aggregations-bucket-datehistogram-aggregation.html
+    /**
+     * [findByIds description]
+     * @param  {Array} ids
+     * @param  {Array} fields
+     * @param  {DateRangeInterval} dateRangeInterval
+     * @param  {Function} f(err: PrettyError, data: Array, took: Number)
+     */
     findByIds: function (ids, fields, dateRangeInterval, f) {
-      console.log(ids, fields, dateRangeInterval);
       assert(_.isArray(ids));
       assert(_.isArray(fields));
       assert(dateRangeInterval instanceof DateRangeInterval);
