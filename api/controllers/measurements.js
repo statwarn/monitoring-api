@@ -21,21 +21,15 @@ module.exports = function (domain) {
     // retrieve one (or more) measurements from a id
     get: function (req, res) {
       var dateRangeInterval = domain.DateRangeInterval.fromReq(req);
-
       if (dateRangeInterval instanceof PrettyError) {
         return res.error(dateRangeInterval);
       }
 
-      if (!req.query.id && !req.query.ids) {
-        return res.error(new PrettyError('id or ids must be defined'));
+      var measurementQuery = domain.MeasurementQuery.fromReq(req, dateRangeInterval);
+      if (measurementQuery instanceof PrettyError) {
+        return res.error(measurementQuery);
       }
 
-      if (!req.query.field && !req.query.fields) {
-        return res.error(new PrettyError('field or fields must be defined'));
-      }
-
-      var ids = convertToArray(req.query.id || req.query.ids);
-      var fields = convertToArray(req.query.field || req.query.fields);
       domain.Measurements.findByIds(measurementQuery, function (err, data, took) {
         if (err) {
           return res.error(err);
@@ -48,17 +42,3 @@ module.exports = function (domain) {
 
   };
 };
-
-
-function convertToArray(value) {
-  if (_.isString(value)) {
-    return [value];
-  }
-
-  if (_.isArray(value)) {
-    return value;
-  }
-
-  // invalid value
-  return [];
-}

@@ -1,7 +1,7 @@
 'use strict';
 
 // MeasurementRepository
-module.exports = function (es, amqp, config, DateRangeInterval) {
+module.exports = function (es, amqp, config, DateRangeInterval, MeasurementQuery) {
   assert(_.isString(config.elasticsearch.index.name_prefix));
   assert(_.isString(config.elasticsearch.index.document.type));
   assert(amqp.publishExchange);
@@ -49,22 +49,19 @@ module.exports = function (es, amqp, config, DateRangeInterval) {
       });
     },
 
-    // histogram aggregation: http://www.elasticsearch.com/guide/en/elasticsearch/reference/current/search-aggregations-bucket-histogram-aggregation.html
-    // date histogram aggregation: http://www.elasticsearch.com/guide/en/elasticsearch/reference/current/search-aggregations-bucket-datehistogram-aggregation.html
     /**
      * [findByIds description]
-     * @param  {Array} ids
+     * @param  {Array} ids array of time serie ids
      * @param  {Array} fields
+     * @param  {Array} aggs array of aggregation type
      * @param  {DateRangeInterval} dateRangeInterval
      * @param  {Function} f(err: PrettyError, data: Array, took: Number)
      */
-    findByIds: function (ids, fields, dateRangeInterval, f) {
-      assert(_.isArray(ids));
-      assert(_.isArray(fields));
-      assert(dateRangeInterval instanceof DateRangeInterval);
+    findByIds: function (measurementQuery, f) {
+      assert(measurementQuery instanceof MeasurementQuery);
 
-      var fields_aggs = fields.reduce(function (obj, field, i) {
-        // obj, is an object of:
+      var fields_aggs = measurementQuery.fields.reduce(function (obj, field, i) {
+        // ES needs an object of:
         //
         // 'used_memory': {
         //   avg: {
@@ -75,16 +72,16 @@ module.exports = function (es, amqp, config, DateRangeInterval) {
         // with "used_memory" == field
 
         obj[field] = {};
-        obj[field]['avg'] = {
+        obj[field][measurementQuery.aggs[i]] = {
           field: field
         };
         return obj;
       }, {});
 
       es.search({
-        indices: ids.map(makeIndexFromId),
+        indices: measurementQuery.ids.map(makeIndexFromId),
         type: INDEX_DOCUMENT_TYPE,
-        fields: fields,
+        fields: measurementQuery.fields,
         search_type: 'count',
         body: {
           // size=0 to not show search hits because we only want to see the aggregation results in the response.
@@ -93,21 +90,23 @@ module.exports = function (es, amqp, config, DateRangeInterval) {
           query: {
             range: {
               timestamp: {
-                from: dateRangeInterval.start_ts,
-                to: dateRangeInterval.end_ts
+                from: measurementQuery.range.start_ts,
+                to: measurementQuery.range.end_ts
               }
             }
           },
+
           aggs: {
             volume: {
-              // http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/search-aggregations-bucket-datehistogram-aggregation.html
+              // histogram aggregation: http://www.elasticsearch.com/guide/en/elasticsearch/reference/current/search-aggregations-bucket-histogram-aggregation.html
+              // date histogram aggregation: http://www.elasticsearch.com/guide/en/elasticsearch/reference/current/search-aggregations-bucket-datehistogram-aggregation.html
               date_histogram: {
                 field: 'timestamp',
                 min_doc_count: 0,
-                interval: dateRangeInterval.interval,
+                interval: measurementQuery.range.interval,
                 extended_bounds: {
-                  min: dateRangeInterval.start_ts,
-                  max: dateRangeInterval.end_ts
+                  min: measurementQuery.range.start_ts,
+                  max: measurementQuery.range.end_ts
                 }
               },
               aggs: fields_aggs
@@ -136,16 +135,9 @@ module.exports = function (es, amqp, config, DateRangeInterval) {
         // - each fields along with their values
 
         var data = res.aggregations.volume.buckets.reduce(function (data, bucket) {
-          var point = {
+          data.push(_.extend({
             timestamp: bucket.key
-          };
-
-          // add fields
-          fields.forEach(function (fieldName) {
-            point[fieldName] = bucket[fieldName].value;
-          });
-
-          data.push(point);
+          }, _.pick(bucket, measurementQuery.fields)));
           return data;
         }, []);
 

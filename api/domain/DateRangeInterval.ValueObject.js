@@ -12,9 +12,6 @@ module.exports = function () {
    * @param {String} interval
    */
   function DateRangeInterval(start_ts, end_ts, interval) {
-    assert(_.isNumber(start_ts));
-    assert(_.isNumber(end_ts));
-
     this.start_ts = start_ts;
     this.end_ts = end_ts;
     this.interval = interval;
