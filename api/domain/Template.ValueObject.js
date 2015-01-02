@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Template value
+ * ElasticSearch Template value
  */
 
 module.exports = function (es, config, template) {
