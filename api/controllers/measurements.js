@@ -36,12 +36,14 @@ module.exports = function (domain) {
 
       var ids = convertToArray(req.query.id || req.query.ids);
       var fields = convertToArray(req.query.field || req.query.fields);
+      domain.Measurements.findByIds(measurementQuery, function (err, data, took) {
+        if (err) {
+          return res.error(err);
+        }
 
-      domain.Measurements.findByIds(
-        ids,
-        fields,
-        dateRangeInterval,
-        res.errorOrValue);
+        res.set('x-took', took);
+        res.ok(data);
+      });
     },
 
   };
