@@ -60,60 +60,10 @@ module.exports = function (es, amqp, config, DateRangeInterval, MeasurementQuery
     findByIds: function (measurementQuery, f) {
       assert(measurementQuery instanceof MeasurementQuery);
 
-      var fields_aggs = measurementQuery.fields.reduce(function (obj, field, i) {
-        // ES needs an object of:
-        //
-        // 'used_memory': {
-        //   avg: {
-        //     field: 'used_memory'
-        //   }
-        // }
-        //
-        // with "used_memory" == field
 
-        obj[field] = {};
-        obj[field][measurementQuery.aggs[i]] = {
-          field: field
-        };
-        return obj;
-      }, {});
+      var query = measurementQuery.buildQuery(makeIndexFromId, INDEX_DOCUMENT_TYPE);
 
-      es.search({
-        indices: measurementQuery.ids.map(makeIndexFromId),
-        type: INDEX_DOCUMENT_TYPE,
-        fields: measurementQuery.fields,
-        search_type: 'count',
-        body: {
-          // size=0 to not show search hits because we only want to see the aggregation results in the response.
-          size: 0,
-
-          query: {
-            range: {
-              timestamp: {
-                from: measurementQuery.range.start_ts,
-                to: measurementQuery.range.end_ts
-              }
-            }
-          },
-
-          aggs: {
-            volume: {
-              // histogram aggregation: http://www.elasticsearch.com/guide/en/elasticsearch/reference/current/search-aggregations-bucket-histogram-aggregation.html
-              // date histogram aggregation: http://www.elasticsearch.com/guide/en/elasticsearch/reference/current/search-aggregations-bucket-datehistogram-aggregation.html
-              date_histogram: {
-                field: 'timestamp',
-                min_doc_count: 0,
-                interval: measurementQuery.range.interval,
-                extended_bounds: {
-                  min: measurementQuery.range.start_ts,
-                  max: measurementQuery.range.end_ts
-                }
-              },
-              aggs: fields_aggs
-            }
-          }
-        }
-      }, function (err, res) {
+      es.search(query, function (err, res) {
         if (err) {
           return f(new PrettyError(500, 'Could not retrieve measurement, try again.', err));
         }

@@ -21,7 +21,82 @@ module.exports = function (DateRangeInterval) {
 
   MeasurementQuery.schema = require('./MeasurementQuery.ValueObject.schema');
 
-  MeasurementQuery
+  MeasurementQuery.AGGS_MAPPING = {
+    // public aggregation name : private name
+    'min': 'min',
+    'max': 'max',
+    'sum': 'sum',
+    'avg': 'avg',
+    'count': 'value_count',
+    'stats': 'extended_stats'
+  };
+
+  // ensure at start time that the schema and the mapping are kept in sync
+  assert(_.intersection(MeasurementQuery.schema.AGGREGATION_TYPES, _.keys(MeasurementQuery.AGGS_MAPPING)).length === MeasurementQuery.schema.AGGREGATION_TYPES.length);
+
+  /**
+   * @param  {Function} makeIndexFromId(id) -> String a delegate
+   * @param  {String} index_document_type document type
+   * @return {Object} elasticsearch query
+   */
+  MeasurementQuery.prototype.buildQuery = function (makeIndexFromId, index_document_type) {
+    // First build the aggregation on fields
+    var fields_aggs = this.fields.reduce(function (obj, field, i) {
+      // ES needs an object of:
+      //
+      // 'used_memory': {
+      //   avg: {
+      //     field: 'used_memory'
+      //   }
+      // }
+      //
+      // with "used_memory" == field
+
+      obj[field] = {};
+      obj[field][this.aggs[i]] = {
+        field: field
+      };
+      return obj;
+    }.bind(this), {});
+
+    return {
+      indices: this.ids.map(makeIndexFromId),
+      type: index_document_type,
+      fields: this.fields,
+      search_type: 'count',
+      body: {
+        // size=0 to not show search hits because we only want to see the aggregation results in the response.
+        size: 0,
+
+        query: {
+          range: {
+            timestamp: {
+              from: this.range.start_ts,
+              to: this.range.end_ts
+            }
+          }
+        },
+
+        aggs: {
+          volume: {
+            // histogram aggregation: http://www.elasticsearch.com/guide/en/elasticsearch/reference/current/search-aggregations-bucket-histogram-aggregation.html
+            // date histogram aggregation: http://www.elasticsearch.com/guide/en/elasticsearch/reference/current/search-aggregations-bucket-datehistogram-aggregation.html
+            date_histogram: {
+              field: 'timestamp',
+              min_doc_count: 0,
+              interval: this.range.interval,
+              extended_bounds: {
+                min: this.range.start_ts,
+                max: this.range.end_ts
+              }
+            },
+            aggs: fields_aggs
+          }
+        }
+      }
+    };
+  };
+
   /**
    * Create a new MeasurementQuery object from a query
    * This factory will return a PrettyError if the data are invalid
