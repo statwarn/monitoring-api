@@ -60,15 +60,12 @@ module.exports = function (es, amqp, config, DateRangeInterval, MeasurementQuery
     findByIds: function (measurementQuery, f) {
       assert(measurementQuery instanceof MeasurementQuery);
 
-
-      var query = measurementQuery.buildQuery(makeIndexFromId, INDEX_DOCUMENT_TYPE);
-
-      es.search(query, function (err, res) {
+      es.search(measurementQuery.buildQuery(makeIndexFromId, INDEX_DOCUMENT_TYPE), function (err, result) {
         if (err) {
           return f(new PrettyError(500, 'Could not retrieve measurement, try again.', err));
         }
 
-        return f(null, measurementQuery.parseResults(res), res.took);
+        return f(null, measurementQuery.parseResults(result), result.took);
       });
     }
   };

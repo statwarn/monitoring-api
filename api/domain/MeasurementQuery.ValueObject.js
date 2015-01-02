@@ -53,7 +53,9 @@ module.exports = function (DateRangeInterval) {
       // with "used_memory" == field
 
       obj[field] = {};
-      obj[field][this.aggs[i]] = {
+      var public_aggregate_name = this.aggs[i];
+      var es_aggregate_type = MeasurementQuery.AGGS_MAPPING[public_aggregate_name];
+      obj[field][es_aggregate_type] = {
         field: field
       };
       return obj;
@@ -103,7 +105,7 @@ module.exports = function (DateRangeInterval) {
    *                         ES query result
    * @return {Array} array of buckets
    */
-  MeasurementQuery.prototype.parseResult = function (result) {
+  MeasurementQuery.prototype.parseResults = function (results) {
     //  buckets is an array of
     //  [{
     //   key_as_string: "2013-12-29T15:54:00.000Z",
@@ -117,7 +119,7 @@ module.exports = function (DateRangeInterval) {
     // ...]
     //
 
-    return result.aggregations.volume.buckets.reduce(function (data, bucket) {
+    return results.aggregations.volume.buckets.reduce(function (data, bucket) {
       // We want to extract :
       data.push(_.extend({
           // `key` and rename it to `timestamp`
