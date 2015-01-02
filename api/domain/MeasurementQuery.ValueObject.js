@@ -98,6 +98,39 @@ module.exports = function (DateRangeInterval) {
   };
 
   /**
+   * Parse the result from an ES query based on the MeasurementQuery
+   * @param  {Object} result
+   *                         ES query result
+   * @return {Array} array of buckets
+   */
+  MeasurementQuery.prototype.parseResult = function (result) {
+    //  buckets is an array of
+    //  [{
+    //   key_as_string: "2013-12-29T15:54:00.000Z",
+    //   key: 1388332440000,
+    //   doc_count: 1,
+    //   {{fields[0]}}: { <-- first field name
+    //     value: 3626992
+    //   },
+    //   ... <-- and so on for other fields
+    // },
+    // ...]
+    //
+
+    return result.aggregations.volume.buckets.reduce(function (data, bucket) {
+      // We want to extract :
+      data.push(_.extend({
+          // `key` and rename it to `timestamp`
+          timestamp: bucket.key
+        },
+        // each fields along with their values
+        _.pick(bucket, this.fields)
+      ));
+      return data;
+    }.bind(this), []);
+  };
+
+  /**
    * Create a new MeasurementQuery object from a query
    * This factory will return a PrettyError if the data are invalid
    * @param  {Express req} req

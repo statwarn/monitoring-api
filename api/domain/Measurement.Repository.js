@@ -68,30 +68,7 @@ module.exports = function (es, amqp, config, DateRangeInterval, MeasurementQuery
           return f(new PrettyError(500, 'Could not retrieve measurement, try again.', err));
         }
 
-        //  buckets is an array of
-        //  [{
-        //   key_as_string: "2013-12-29T15:54:00.000Z",
-        //   key: 1388332440000,
-        //   doc_count: 1,
-        //   {{fields[0]}}: { <-- first field name
-        //     value: 3626992
-        //   },
-        //   ... <-- and so on for other fields
-        // },
-        // ...]
-        //
-        // We want to extract :
-        // - `key`, and rename it to `timestamp`
-        // - each fields along with their values
-
-        var data = res.aggregations.volume.buckets.reduce(function (data, bucket) {
-          data.push(_.extend({
-            timestamp: bucket.key
-          }, _.pick(bucket, measurementQuery.fields)));
-          return data;
-        }, []);
-
-        return f(null, data, res.took);
+        return f(null, measurementQuery.parseResults(res), res.took);
       });
     }
   };
