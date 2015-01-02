@@ -26,9 +26,19 @@ module.exports = function (DateRangeInterval) {
    * Create a new MeasurementQuery object from a query
    * This factory will return a PrettyError if the data are invalid
    * @param  {Express req} req
-   *                       req.start_ts (string) e.g. '1419872302441'
-   *                       req.end_ts (string) e.g. '1419872392441'
-   *                       req.interval must be a string from the `MeasurementQuery.INTERVALS` interval set
+   *
+   *                       req.id (string) e.g. '1419872302441'
+   *                        OR
+   *                       req.ids (array) e.g. ['1419872302441']
+   *
+   *                       req.field (string) e.g. 'used_memory'
+   *                        OR
+   *                       req.fields (array) e.g. ['used_memory', ..]
+   *
+   *                       req.agg (string) e.g. 'stats'
+   *                        OR
+   *                       req.aggs (array) e.g. ['stats', '
+   * @param {DateRangeInterval} dateRangeInterval
    * @return {PrettyError|MeasurementQuery}
    */
   MeasurementQuery.fromReq = function (req, dateRangeInterval) {
