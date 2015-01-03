@@ -22,7 +22,7 @@ module.exports = function (DateRangeInterval) {
   MeasurementQuery.schema = require('./MeasurementQuery.ValueObject.schema');
 
   MeasurementQuery.AGGS_MAPPING = {
-    // public aggregation name : private name
+    // public aggregation name -> private name
     'min': 'min',
     'max': 'max',
     'sum': 'sum',
@@ -30,6 +30,8 @@ module.exports = function (DateRangeInterval) {
     'count': 'value_count',
     'stats': 'extended_stats'
   };
+
+  MeasurementQuery.DEFAULT_AGGREGATION_TYPE = _.first(MeasurementQuery.schema.AGGREGATION_TYPES);
 
   // ensure at start time that the schema and the mapping are kept in sync
   assert(_.intersection(MeasurementQuery.schema.AGGREGATION_TYPES, _.keys(MeasurementQuery.AGGS_MAPPING)).length === MeasurementQuery.schema.AGGREGATION_TYPES.length);
@@ -161,18 +163,30 @@ module.exports = function (DateRangeInterval) {
     }
 
     if (!req.query.id && !req.query.ids) {
-      return new PrettyError('id or ids must be defined');
+      return new PrettyError(400, 'id or ids must be defined');
     }
 
     if (!req.query.field && !req.query.fields) {
-      return new PrettyError('field or fields must be defined');
+      return new PrettyError(400, 'field or fields must be defined');
     }
 
     req.query.ids = convertToArray(req.query.id || req.query.ids);
     req.query.fields = convertToArray(req.query.field || req.query.fields);
-    req.query.aggs = convertToArray(req.query.agg || req.query.aggs || _.first(MeasurementQuery.schema.AGGS));
+    req.query.aggs = convertToArray(req.query.agg || req.query.aggs);
 
+    if (req.query.aggs.length > 0 && req.query.aggs.length !== req.query.fields.length) {
+      return new PrettyError(400, 'For each `fields` specified an aggregation type (`aggs`) must be specified');
+    }
+
+    if (req.query.aggs.length === 0) {
+      // not aggs were specify fill it
+      req.query.aggs = req.query.fields.map(_.partial(_.identity, MeasurementQuery.DEFAULT_AGGREGATION_TYPE));
+    }
+
+    // ||
     // complete aggs if necessary
+
+
     return _.validate(req.query, MeasurementQuery.schema.fromReq, function fallback(query) {
       return new MeasurementQuery(query.ids, query.fields, query.aggs, dateRangeInterval);
     });
