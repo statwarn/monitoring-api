@@ -5,8 +5,8 @@
   "main": "server.js",
   "private": true,
   "scripts": {
-    "test": "zsh -c 'setopt extended_glob;source .env_test;mocha -t 5000 -R spec **/*.test.js~node_modules/*; zsh -i'",
-    "test-watch": "zsh -c 'setopt extended_glob;source .env_test;mocha -w -G -t 5000 -R spec **/*.test.js~node_modules/*; zsh -i'"
+    "test-watch": "source ci/.env_test;mocha -w -G -t 5000 -R spec **/*.test.js~node_modules/*",
+    "ci": "./ci/ci-start.sh"
   },
   "repository": {
     "type": "git",

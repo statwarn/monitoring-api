@@ -3,11 +3,23 @@
 /*
 Require this file inside tests
  */
-
 require('./bootstrap');
-// ensure that we are running in dev env in tests
-assert(process.env.AMQP_VHOST, 'test');
-assert(process.env.ELASTICSEARCH_HOST_HOST, 'redsmintest.west-eu.azr.facetflow.io');
+
+var fs = require('fs');
+
+if (!process.env.OVERRIDE) {
+  _.compact(fs.readFileSync('./ci/.env_test').toString('utf8').split('\n')).forEach(function (line) {
+    var pair = _.rest(line.split('export ')).join(' ').split('=').map(function trim(v) {
+      return v.trim();
+    });
+
+    process.env[pair[0]] = pair[1].replace(/"/g, '');
+  });
+}
+
+// ensure that we are running the tests in dev env
+assert(process.env.AMQP_VHOST === 'test');
+assert(process.env.ELASTICSEARCH_HOST_HOST === 'redsmintest.west-eu.azr.facetflow.io');
 
 var ServerFactory = require('./server');
 global.t = require('chai').assert;
