@@ -57,13 +57,17 @@ example of metric : instantaneous_ops_per_sec
 __params:__
 
 ```
-fields: String (e.g. ['data.a', 'data.b'])
-ids: String (e.g. ['17954235-926d-47af-8547-8b094556dbd6', '33436bc1-5d55-44d8-9cb1-19d17823668c'])
+field: String (e.g. 'data.a')
+fields: Strings (e.g. ['data.a', 'data.b'])
+id: String (e.g '17954235-926d-47af-8547-8b094556dbd6')
+ids: Strings (e.g. ['17954235-926d-47af-8547-8b094556dbd6', '33436bc1-5d55-44d8-9cb1-19d17823668c'])
 start_ts: Number (UTC)
 end_ts: Number (UTC)
-interval: String (e.g.  year ,quarter ,month ,week ,day ,hour ,minute, second)
-agg: sum, avg, min, max, count (default. count)
+interval: String (e.g.  year, quarter, month, week, day, hour, minute, second)
+agg: String (e.g. sum, avg, min, max, count (default. avg))
+aggs: Strings (e.g. ['sum', 'avg', 'min'])
 ```
+
 __response__
 
 return the metric in json format with timestamp (example of metric_name: instantaneous_ops_per_sec)
@@ -71,15 +75,18 @@ return the metric in json format with timestamp (example of metric_name: instant
 ```
 [
   {
-  	"server_id": String (mongoid)
+  	"serie_id": String
     "name": String (name of the metric),
     "values": [
       {
-        "v": String,
-        "d": String (timestamp)
+        "timestamp": Number (UTC timestamp),
+        "value": String,
+        // and even more fields if agg=stats
       }
     ]
-  }
+  },
+
+  ...
 ]
 ```
 
