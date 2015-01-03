@@ -4,8 +4,11 @@
 Require this file inside tests
  */
 
-require('./.env.test');
 require('./bootstrap');
+// ensure that we are running in dev env in tests
+assert(process.env.AMQP_VHOST, 'test');
+assert(process.env.ELASTICSEARCH_HOST_HOST, 'redsmintest.west-eu.azr.facetflow.io');
+
 var ServerFactory = require('./server');
 global.t = require('chai').assert;
 global.request = require('supertest');
