@@ -74,8 +74,8 @@ return the metric in json format with timestamp (example of metric_name: instant
 ```
 [
   {
-  	"serie_id": String
-    "name": String (name of the metric),
+  	"id": String
+    "field": String (name of the field),
     "values": [
       {
         "timestamp": Number (UTC timestamp),
