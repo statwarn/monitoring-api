@@ -9,4 +9,4 @@ npm install
 npm install
 export NODE_ENV=preprod
 setopt extended_glob;
-`npm bin`/mocha -t 5000 -R spec **/*.test.js~node_modules/*;
+`npm bin`/mocha -t 10000 -R spec **/*.test.js~node_modules/*;

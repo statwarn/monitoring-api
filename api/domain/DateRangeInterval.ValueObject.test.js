@@ -15,7 +15,6 @@ describe('DateRangeInterval', function () {
         query: {}
       }) instanceof PrettyError, 'should be a pretty error');
       // @todo check error.details
-      t.qsodifjqosijfd();
       done();
     });
 
