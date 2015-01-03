@@ -121,15 +121,50 @@ module.exports = function (DateRangeInterval) {
     // ...]
     //
 
-    return results.aggregations.volume.buckets.reduce(function (data, bucket) {
-      // We want to extract :
-      data.push(_.extend({
-          // `key` and rename it to `timestamp`
-          timestamp: bucket.key
-        },
-        // each fields along with their values
-        _.pick(bucket, this.fields)
-      ));
+    /**
+     Output format must be:
+     [
+      {
+        "id": String
+        "field": String (name of the field),
+        "values": [
+          {
+            "timestamp": Number (UTC timestamp),
+            "value": String,
+            // and even more fields if agg=stats
+          }
+        ]
+      },
+      ...
+      ]
+     */
+
+    return results.aggregations.volume.buckets.reduce(function reduceBuckets(data, bucket) {
+      this.fields.forEach(function forEachField(field) {
+        // first find output data bucket
+        var group = _.find(data, {
+          field: field
+        });
+
+
+        if (!group) {
+          group = {
+            id: this.ids[0], // @todo handle multiple ids
+            field: field,
+            values: []
+          };
+          data.push(group);
+        }
+
+        group.values.push(_.extend({
+            // `key` and rename it to `timestamp`
+            timestamp: bucket.key
+          },
+          // each fields along with their values
+          bucket[field]
+        ));
+      }, this);
+
       return data;
     }.bind(this), []);
   };
