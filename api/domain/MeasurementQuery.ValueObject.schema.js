@@ -1,6 +1,6 @@
 // http://json-schema.org/
 
-var AGGREGATION_TYPES = ['min', 'max', 'sum', 'avg', 'count', 'stats'];
+var AGGREGATION_TYPES = ['avg', 'min', 'max', 'sum', 'count', 'stats'];
 
 module.exports = {
   AGGREGATION_TYPES: AGGREGATION_TYPES,
