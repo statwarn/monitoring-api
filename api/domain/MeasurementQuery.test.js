@@ -68,7 +68,7 @@ describe('MeasurementQuery', function () {
           fields: ['plop', 'plop']
         }
       }, dateRangeInterval);
-      t.deepEqual(measurementQuery.aggs, ['min', 'min']);
+      t.deepEqual(measurementQuery.aggs, ['avg', 'avg']);
       done();
     });
   });
@@ -119,7 +119,7 @@ describe('MeasurementQuery', function () {
                 },
                 "aggs": {
                   "plop": {
-                    "min": {
+                    "avg": {
                       "field": "plop"
                     }
                   }
