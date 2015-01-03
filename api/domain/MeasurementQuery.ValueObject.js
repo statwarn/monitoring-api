@@ -183,10 +183,6 @@ module.exports = function (DateRangeInterval) {
       req.query.aggs = req.query.fields.map(_.partial(_.identity, MeasurementQuery.DEFAULT_AGGREGATION_TYPE));
     }
 
-    // ||
-    // complete aggs if necessary
-
-
     return _.validate(req.query, MeasurementQuery.schema.fromReq, function fallback(query) {
       return new MeasurementQuery(query.ids, query.fields, query.aggs, dateRangeInterval);
     });

@@ -7,7 +7,7 @@ var MeasurementQuery = require('./MeasurementQuery.ValueObject')(DateRangeInterv
 describe('MeasurementQuery', function () {
   var dateRangeInterval;
   beforeEach(function () {
-    dateRangeInterval = new DateRangeInterval();
+    dateRangeInterval = new DateRangeInterval(1420293008365, 1420294008365, 'minute');
   });
 
   describe('MeasurementQuery.fromReq', function () {
@@ -70,6 +70,70 @@ describe('MeasurementQuery', function () {
       }, dateRangeInterval);
       t.deepEqual(measurementQuery.aggs, ['min', 'min']);
       done();
+    });
+  });
+
+  describe('MeasurementQuery', function () {
+    var measurementQuery;
+
+    beforeEach(function () {
+      measurementQuery = MeasurementQuery.fromReq({
+        query: {
+          id: '10',
+          fields: ['plop', 'plop']
+        }
+      }, dateRangeInterval);
+    });
+
+    describe('::buildQuery', function () {
+      it('should return an query', function (done) {
+        var makeIndexFromId = _.identity;
+        var index_document_type = 'plop';
+        var query = measurementQuery.buildQuery(makeIndexFromId, index_document_type);
+        t.strictEqual(query.type, index_document_type);
+        t.deepEqual(query, {
+          "indices": ["10"],
+          "type": "plop",
+          "fields": ["plop", "plop"],
+          "search_type": "count",
+          "body": {
+            "size": 0,
+            "query": {
+              "range": {
+                "timestamp": {
+                  "from": 1420293008365,
+                  "to": 1420294008365
+                }
+              }
+            },
+            "aggs": {
+              "volume": {
+                "date_histogram": {
+                  "field": "timestamp",
+                  "min_doc_count": 0,
+                  "interval": "minute",
+                  "extended_bounds": {
+                    "min": 1420293008365,
+                    "max": 1420294008365
+                  }
+                },
+                "aggs": {
+                  "plop": {
+                    "min": {
+                      "field": "plop"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        });
+        done();
+      });
+
+      describe('::parseResults', function () {
+
+      });
     });
   });
 });
