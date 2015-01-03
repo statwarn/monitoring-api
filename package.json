@@ -5,8 +5,8 @@
   "main": "server.js",
   "private": true,
   "scripts": {
-    "test": "mocha -t 5000 -R spec **/**.test.js",
-    "test-watch": "mocha -w -G -t 5000 -R spec **/**.test.js"
+    "test": "mocha -t 5000 -R spec **/*.test.js~node_modules/*",
+    "test-watch": "mocha -w -G -t 5000 -R spec **/*.test.js~node_modules/*"
   },
   "repository": {
     "type": "git",
