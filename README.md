@@ -44,8 +44,7 @@ id: String id
 #### Errors
 ```
 Incomplete 202: request accepted but the processing hasn't been completed
-Bad Request 400: token missing
-Unauthorized 401: wrong token
+Bad Request 400: missing field
 Internal Error 500: Internal server error
 Gateway Timeout 504: timeout
 ```
@@ -93,9 +92,8 @@ return the metric in json format with timestamp (example of metric_name: instant
 #### Errors
 
 ```
-Bad Request 400: token missing
-Unauthorized 401: wrong token
-Internal Error 500: Internal server error
+Bad Request 400: missing field
+Internal Error 500: Internal Server Error
 Gateway Timeout 504: timeout
 ```
 
@@ -114,8 +112,7 @@ access_token: String
 
 ```
 Incomplete 202: request accepted but the processing hasn't been completed
-Bad Request 400: token missing
-Unauthorized 401: wrong token
+Bad Request 400: missing field
 Internal Error 500: Internal server error
 Gateway Timeout 504: timeout
 ```
