@@ -13,13 +13,16 @@
     "args": ["**/*.js", "!*node_modules/**", "!benchmark/*"]
   },
   "jsinspect": {
-    "args": ["**/*.js", "!*node_modules/**", "!benchmark/*"],
+    "args": ["**/*.js", "!*node_modules/**", "!benchmark/*", "!**/**.test.js"],
     "diff": true,
     "threshold": 40
   },
   "buddyjs": {
     "args": ["**/*.js", "!*node_modules/**", "!benchmark/*"],
     "ignore": [0, 1, 200]
+  },
+  "david": {
+    "stable": true
   },
   "nsp": {}
 }
