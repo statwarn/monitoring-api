@@ -40,8 +40,8 @@ function getConfiguredAPP(f, fRouteError, options) {
 }
 
 function defaultAppHandler(app, config, logger /*, es, amqp */ ) {
-  app.listen(config.api.port, function () {
-    logger.info('API listening on ' + config.api.port);
+  app.listen(config.statwarn.monitoring.api.port, function () {
+    logger.info('API listening on ' + config.statwarn.monitoring.api.port);
   });
 }
 

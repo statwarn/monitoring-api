@@ -4,8 +4,12 @@ module.exports = function (logger) {
   var env = require('common-env')(logger);
 
   var config = env.getOrElseAll({
-    api: {
-      port: 9000
+    statwarn: {
+      monitoring: {
+        api: {
+          port: 9000
+        }
+      }
     },
 
     elasticsearch: {
