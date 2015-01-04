@@ -9,7 +9,7 @@ tv4.addFormat({
   },
   'single-level-object': function (obj) {
     var isSingleLevel = true;
-    _.forOwn(obj, function (value, key) {
+    _.forOwn(obj, function (value /*, key*/ ) {
       if (_.isPlainObject(value)) {
         isSingleLevel = false;
         return false;

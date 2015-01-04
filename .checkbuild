@@ -7,18 +7,18 @@
     "allowFailures": false
   },
   "jshint": {
-    "args": ["**/*.js", "!*node_modules/**"]
+    "args": ["**/*.js", "!*node_modules/**", "!benchmark/*"]
   },
   "jscs": {
-    "args": ["**/*.js", "!*node_modules/**"]
+    "args": ["**/*.js", "!*node_modules/**", "!benchmark/*"]
   },
   "jsinspect": {
-    "args": ["**/*.js", "!*node_modules/**"],
+    "args": ["**/*.js", "!*node_modules/**", "!benchmark/*"],
     "diff": true,
     "threshold": 40
   },
   "buddyjs": {
-    "args": ["**/*.js", "!*node_modules/**"],
+    "args": ["**/*.js", "!*node_modules/**", "!benchmark/*"],
     "ignore": [0, 1, 200]
   },
   "nsp": {}

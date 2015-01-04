@@ -1,3 +1,4 @@
+'use strict';
 // http://json-schema.org/
 
 var AGGREGATION_TYPES = ['avg', 'min', 'max', 'sum', 'count', 'stats'];

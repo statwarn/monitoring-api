@@ -1,3 +1,4 @@
+'use strict';
 var Winston = require('winston');
 
 var winston = new Winston.Logger({
