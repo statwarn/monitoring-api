@@ -1,24 +1,24 @@
 {
   "checkbuild": {
-    "enable": ["jshint", "jscs", "jsinspect", "nsp"],
+    "enable": ["jshint", "jsinspect", "david", "nsp"],
     // don't exit immediately if one of the tools reports an error
     "continueOnError": true,
     // don't exit(1) even if we had some failures
     "allowFailures": false
   },
   "jshint": {
-    "args": ["**/*.js", "!*assets/vendor/**", "!*node_modules/**", "!*assets/javascript/**"]
+    "args": ["**/*.js", "!*node_modules/**"]
   },
   "jscs": {
-    "args": ["**/*.js", "!*assets/vendor/**", "!*node_modules/**"]
+    "args": ["**/*.js", "!*node_modules/**"]
   },
   "jsinspect": {
-    "args": ["**/*.js", "!*assets/vendor/**", "!*node_modules/**", "!*assets/javascript/**", "!*assets/i18n/**"],
+    "args": ["**/*.js", "!*node_modules/**"],
     "diff": true,
     "threshold": 40
   },
   "buddyjs": {
-    "args": ["**/*.js", "!*assets/vendor/**", "!*node_modules/**"],
+    "args": ["**/*.js", "!*node_modules/**"],
     "ignore": [0, 1, 200]
   },
   "nsp": {}
