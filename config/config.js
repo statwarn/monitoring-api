@@ -3,7 +3,7 @@
 module.exports = function (logger) {
   var env = require('common-env')(logger);
 
-  return env.getOrElseAll({
+  var config = env.getOrElseAll({
     api: {
       port: 9000
     },
@@ -57,4 +57,9 @@ module.exports = function (logger) {
       }
     }
   });
+
+  // export env
+  config.env = env;
+
+  return config;
 };
