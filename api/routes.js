@@ -13,11 +13,11 @@ module.exports = function (logger, es, amqp, fOnError, domain) {
 
     app.all('/internal/templates/setup', controllers.templates.setup);
 
-    app.use(function errorHandler(err, req, res) {
+    app.use(function errorHandler(err, req, res, next) {
       var publicError = new PrettyError(500, 'Internal Server Error', err);
       // clean stack because it does not say much
       publicError.stack = null;
-      res.error(publicError);
+      res.status(500).send(publicError);
     });
   };
 };
