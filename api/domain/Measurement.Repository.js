@@ -67,6 +67,40 @@ module.exports = function (es, amqp, config, DateRangeInterval, MeasurementQuery
 
         return f(null, measurementQuery.parseResults(result), result.took);
       });
+    },
+
+    describe: function (id, size, f) {
+      es.search({
+        index: makeIndexFromId(id),
+        type: INDEX_DOCUMENT_TYPE,
+        body: {
+          _source: true,
+          size: size,
+          sort: [{
+            timestamp: {
+              order: "desc"
+            }
+          }]
+        },
+      }, function (err, res) {
+        if (err) {
+          return f(new PrettyError(500, 'Could not retrieve measurement, try again.', err));
+        }
+
+        // only get source of document
+        var source = _.map(res.hits.hits, function (res) {
+          return res._source;
+        });
+
+        // merge measurements and replace value by key type
+        var allKeys = _.mapValues(_.extend.apply(null, source), function (v, k) {
+          // typeof [] === 'object'
+          return _.isArray(v) ? 'array' : typeof v;
+        });
+
+        return f(null, allKeys);
+      });
+
     }
   };
 };
