@@ -74,23 +74,22 @@ module.exports = function (es, amqp, config, DateRangeInterval, MeasurementQuery
         index: makeIndexFromId(id),
         type: INDEX_DOCUMENT_TYPE,
         body: {
-          _source: true,
           size: size,
           sort: [{
             timestamp: {
-              order: "desc"
+              order: 'desc'
             }
           }]
         },
       }, function (err, res) {
-        if (err) {
+        if (err || !res || !res.hits.hits) {
           return f(new PrettyError(500, 'Could not retrieve measurement, try again.', err));
         }
-
-        // only get source of document
-        var source = _.map(res.hits.hits, function (res) {
-          return res._source;
-        });
+        // only get source.data of document
+        var source = _(res.hits.hits)
+          .pluck('_source')
+          .pluck('data')
+          .value();
 
         // merge measurements and replace value by key type
         var allKeys = _.mapValues(_.extend.apply(null, source), function (v, k) {
@@ -100,7 +99,6 @@ module.exports = function (es, amqp, config, DateRangeInterval, MeasurementQuery
 
         return f(null, allKeys);
       });
-
     }
   };
 };
