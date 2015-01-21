@@ -47,10 +47,9 @@ describe('Measurement Repository', function () {
     after(function (done) {
       connectAndCheckES(function (err, es) {
         async.each(testObjCollection, function (obj, cb) {
-          var id = '' + testObjCollection.indexOf(obj);
 
           es.deleteByQuery({
-            index: INDEX_NAME_PREFIX + '-' + id,
+            index: INDEX_NAME_PREFIX + '-test',
             type: INDEX_DOCUMENT_TYPE,
             body: {
               query: {
