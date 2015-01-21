@@ -41,20 +41,24 @@ module.exports = function (domain) {
     },
 
     // get data keys of X latest documents
-    describe: function(req, res) {
+    describe: function (req, res) {
       if (!_.isObject(req) || !req || !_.isObject(req.params)) {
         return res.error(new PrettyError(400, 'Invalid request'));
       }
 
-      if (!req.params.measurement_id) {
-        return res.error(new PrettyError(400, 'id must be defined'));
+      if (!req.params.measurement_id ||  !_.isNumber(parseInt(req.params.measurement_id, 10))) {
+        return res.error(new PrettyError(400, 'id must be defined and a number'));
+      }
+
+      if (size && !_.isNumber(parseInt(size, 10))) {
+        return res.error(new PrettyError(400, 'size must be a number'));
       }
 
       var id = parseInt(req.params.measurement_id, 10);
-      var size = req.params.size || 10;
+      var size = size ? parseInt(req.params.size, 10) : 10;
 
-      domain.Measurements.describe(id, size, function(err, data) {
-        if(err) {
+      domain.Measurements.describe(id, size, function (err, data) {
+        if (err) {
           return res.error(err);
         }
         res.ok(data);
