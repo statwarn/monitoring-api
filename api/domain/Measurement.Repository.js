@@ -31,7 +31,7 @@ module.exports = function (es, amqp, config, DateRangeInterval, MeasurementQuery
         body: measurement.toDocument()
       }, function (err, res) {
         if (err) {
-          return f(new PrettyError(500, 'An error occured will creating the measurement', err));
+          return f(new PrettyError(500, 'An error occured while creating the measurement', err));
         }
 
         if (!_.isPlainObject(res) || !res.created) {

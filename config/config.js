@@ -30,7 +30,7 @@ module.exports = function (logger) {
       maxRetries: 5,
 
       // Number — Milliseconds before an HTTP request will be aborted and retried. This can also be set per request.
-      requestTimeout: 5000,
+      requestTimeout: 10000,
 
       // Number — Milliseconds that a dead connection will wait before attempting to revive itself.
       deadTimeout: 1000,
