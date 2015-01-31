@@ -36,7 +36,7 @@
     "redis": "^0.12.1",
     "requestretry": "^1.2.1",
     "tv4": "^1.1.5",
-    "tv4-formats": "^0.5.1",
+    "tv4-formats": "^1.0.0",
     "winston": "^0.8.3"
   },
   "devDependencies": {
