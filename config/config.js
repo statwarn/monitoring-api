@@ -38,7 +38,7 @@ module.exports = function (logger) {
         template: 'defined/redsmin.template.js',
         settings: {
           number_of_shards: 1,
-          number_of_replicas: 1
+          number_of_replicas: 0
         },
         name_prefix: 'monitoring',
         document: {
