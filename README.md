@@ -31,9 +31,16 @@ id: String id
 
 ```
 {
-  "redis_version": "2.8.17"
-  "redis_git_dirty": 0
-  ...
+  id:"server-thor",
+  timestamp: UTC,
+  data:{
+    ram: 100000, // bits
+    cpu: 10, // %
+    network_io: 0 // bits
+  }, 
+  metadata:{
+    
+  }
 }
 ```
 
