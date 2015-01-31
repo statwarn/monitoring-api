@@ -1,3 +1,4 @@
+/*jshint -W098 */
 'use strict';
 
 module.exports = function (logger, es, amqp, fOnError, domain) {

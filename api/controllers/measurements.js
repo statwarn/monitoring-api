@@ -85,7 +85,7 @@ module.exports = function (domain) {
     middlewares: [
 
       function checkMeasurementId(req, res, next) {
-        if (!req.params || !req.params.measurement_id || !_.isString(req.params.measurement_id) || req.params.measurement_id.length == 0) {
+        if (!req.params || !req.params.measurement_id || !_.isString(req.params.measurement_id) || req.params.measurement_id.length === 0) {
           return res.error(new PrettyError(400, 'measurement_id must be defined and a non-empty string'));
         }
 

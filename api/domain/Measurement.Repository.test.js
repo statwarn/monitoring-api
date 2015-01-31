@@ -1,21 +1,20 @@
 'use strict';
-require('../../bootstrap.test');
-
-var logger = require('../../helpers/logger');
-var config = require('../../config')(logger);
-var INDEX_NAME_PREFIX = config.elasticsearch.index.name_prefix;
-var INDEX_DOCUMENT_TYPE = config.elasticsearch.index.document.type;
-var connectAndCheckES = require('../../helpers/elasticsearch')(config.elasticsearch);
-var Measurement;
-
 // @romain : expose this inside a fixture
-var testObjCollection = [{
-  a: 1
-}, {
-  b: 'plop'
-}, {
-  c: true
-}];
+// require('../../bootstrap.test');
+
+// var logger = require('../../helpers/logger');
+// var config = require('../../config')(logger);
+// var INDEX_NAME_PREFIX = config.elasticsearch.index.name_prefix;
+// var INDEX_DOCUMENT_TYPE = config.elasticsearch.index.document.type;
+// var connectAndCheckES = require('../../helpers/elasticsearch')(config.elasticsearch);
+// var Measurement;
+// var testObjCollection = [{
+//   a: 1
+// }, {
+//   b: 'plop'
+// }, {
+//   c: true
+// }];
 
 describe('Measurement Repository', function () {
   // describe('Measurement.describe', function () {

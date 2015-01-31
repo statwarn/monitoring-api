@@ -92,7 +92,7 @@ module.exports = function (es, amqp, config, DateRangeInterval, MeasurementQuery
           .value();
 
         // merge measurements and replace value by key type
-        var allKeys = _.mapValues(_.extend.apply(null, source), function (v, k) {
+        var allKeys = _.mapValues(_.extend.apply(null, source), function (v) {
           // typeof [] === 'object'
           return _.isArray(v) ? 'array' : typeof v;
         });
