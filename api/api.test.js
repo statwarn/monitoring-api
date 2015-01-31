@@ -25,8 +25,6 @@ describe('Monitoring API server', function () {
       request(app)
         .post('/api/v1/measurements/my-time-serie')
         .send({
-          // specify the time-serie id
-          id: 'my-time-serie',
           timestamp: Date.now(),
           data: {
             a: Math.round(Math.random() * 10),
