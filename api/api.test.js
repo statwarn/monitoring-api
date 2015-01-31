@@ -16,14 +16,14 @@ describe('Monitoring API server', function () {
   describe('POST /api/v1/measurements', function () {
     it('should return a 400 error if nothing was passed in body', function (done) {
       request(app)
-        .post('/api/v1/measurements')
+        .post('/api/v1/measurements/my-time-serie')
         .expect(400)
         .end(done);
     });
 
     it('should return a 201 when a valid measurements is passed in body', function (done) {
       request(app)
-        .post('/api/v1/measurements')
+        .post('/api/v1/measurements/my-time-serie')
         .send({
           // specify the time-serie id
           id: 'my-time-serie',
