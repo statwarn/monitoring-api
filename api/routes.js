@@ -16,6 +16,7 @@ module.exports = function (logger, es, amqp, fOnError, domain) {
     app.post('/api/v1/measurements/:measurement_id', controllers.measurements.post);
     app.get('/api/v1/measurements/:measurement_id/describe', controllers.measurements.describe);
 
+    app.del('/internal/removeAllData', controllers.measurements.removeAllData);
     app.all('/internal/templates/setup', controllers.templates.setup);
 
     app.use(function errorHandler(err, req, res, next) {
