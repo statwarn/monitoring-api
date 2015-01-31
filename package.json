@@ -1,6 +1,6 @@
 {
   "name": "statwarn-monitoring-api",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Statwarn Monitoring API",
   "main": "server.js",
   "private": true,
