@@ -6,7 +6,9 @@ module.exports = {
     'id': {
       'title': 'Measurement id',
       'description': 'The id the current measurement data should be linked to',
-      'type': 'string'
+      'type': 'string',
+      'minLength': 3,
+      'maxLength': 125
     },
 
     'timestamp': {

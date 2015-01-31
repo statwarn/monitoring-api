@@ -4,7 +4,8 @@ module.exports = function (domain) {
   return {
     // create a measurement
     post: function (req, res) {
-      var measurement = domain.Measurement.fromJSON(req.body);
+      var measurement_id = req.params.measurement_id;
+      var measurement = domain.Measurement.fromJSON(measurement_id, req.body);
 
       if (measurement instanceof PrettyError) {
         return res.error(measurement);
@@ -46,16 +47,12 @@ module.exports = function (domain) {
         return res.error(new PrettyError(400, 'Invalid request'));
       }
 
-      if (!req.params.measurement_id ||  !_.isNumber(parseInt(req.params.measurement_id, 10))) {
-        return res.error(new PrettyError(400, 'id must be defined and a number'));
-      }
-
       if (size && !_.isNumber(parseInt(size, 10))) {
         return res.error(new PrettyError(400, 'size must be a number'));
       }
 
-      var id = parseInt(req.params.measurement_id, 10);
-      var size = size ? parseInt(req.params.size, 10) : 10;
+      var id = req.params.measurement_id;
+      var size = size ? parseInt(req.params.size, 10) :  10;
 
       domain.Measurements.describe(id, size, function (err, data) {
         if (err) {
@@ -63,6 +60,17 @@ module.exports = function (domain) {
         }
         res.ok(data);
       });
-    }
+    },
+
+    // Define middlewares
+    middlewares: [
+
+      function checkMeasurementId(req, res, next) {
+        if (!req.params || !req.params.measurement_id || !_.isString(req.params.measurement_id) || req.params.measurement_id.length == 0) {
+          return res.error(new PrettyError(400, 'measurement_id must be defined and a non-empty string'));
+        }
+
+        next();
+    }]
   };
 };

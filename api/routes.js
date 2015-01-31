@@ -7,8 +7,12 @@ module.exports = function (logger, es, amqp, fOnError, domain) {
   return function (app) {
     app.use(augmentReqAndRes(fOnError));
 
-    app.post('/api/v1/measurements', controllers.measurements.post);
     app.get('/api/v1/measurements', controllers.measurements.get);
+
+    // ensure that measurement id is well defined
+    app.all('/api/v1/measurements/:measurement_id', controllers.measurements.middlewares);
+
+    app.post('/api/v1/measurements/:measurement_id', controllers.measurements.post);
     app.get('/api/v1/measurements/:measurement_id/describe', controllers.measurements.describe);
 
     app.all('/internal/templates/setup', controllers.templates.setup);

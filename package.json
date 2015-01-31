@@ -29,7 +29,7 @@
     "common-env": "^1.0.0",
     "elasticsearch": "^3.0.1",
     "express": "^4.10.6",
-    "lodash": "^2.4.1",
+    "lodash": "^3.0.1",
     "mocha": "^2.0.1",
     "moment-range": "^1.0.5",
     "node-redis": "^0.1.7",

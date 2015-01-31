@@ -31,11 +31,12 @@ Measurement.schema = require('./Measurement.Entity.schema');
  * @param  {Object}
  * @return {PrettyError|Measurement}
  */
-Measurement.fromJSON = function (json) {
+Measurement.fromJSON = function (measurement_id, json) {
   if (!_.isObject(json) || !json) {
     return new PrettyError(400, 'Invalid JSON for Measurement');
   }
 
+  json.id = measurement_id;
   return _.validate(json, Measurement.schema, function fallback(json) {
     return new Measurement(json.id, json.timestamp, json.data, json.metadata || null);
   });
