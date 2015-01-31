@@ -4,7 +4,9 @@ module.exports = {
   "name": "{{INDEX_NAME_PREFIX}}_template",
   "template": "{{INDEX_NAME_PREFIX}}-*",
   "settings": {
+    // Can be overriden by ELASTICSEARCH_INDEX_SETTINGS_NUMBER_OF_SHARDS
     "number_of_shards": 1,
+    // Can be overriden by ELASTICSEARCH_INDEX_SETTINGS_NUMBER_OF_REPLICAS
     "number_of_replicas": 1
   },
   "mappings": {
