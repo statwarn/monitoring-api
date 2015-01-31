@@ -99,6 +99,37 @@ module.exports = function (es, amqp, config, DateRangeInterval, MeasurementQuery
 
         return f(null, allKeys);
       });
+    },
+
+    removeAllData: function (before_date, f) {
+      // get indices starting by 'monitoring'
+      es.indices.getAliases({
+        index: INDEX_NAME_PREFIX + '*',
+        type: INDEX_DOCUMENT_TYPE
+      }, function (err, indices) {
+        if (err) {
+          return f(err);
+        }
+
+        // remove documents older than `before_date` for each index
+        es.deleteByQuery({
+          // comma separated indices
+          index: Object.keys(indices).join(','),
+          body: {
+            query: {
+              range: {
+                timestamp: {
+                  lte: before_date
+                }
+              }
+            }
+          }
+        }, function (err) {
+          if (err) {
+            return f(err);
+          }
+        });
+      });
     }
   };
 };

@@ -62,6 +62,25 @@ module.exports = function (domain) {
       });
     },
 
+    removeAllData: function (req, res) {
+      if (!_.isObject(req) || !req || !_.isObject(req.params)) {
+        return res.error(new PrettyError(400, 'Invalid request'));
+      }
+
+      var before_date = req.params.remove_before_date;
+
+      if (!before_date || !_.isNumber(parseInt(before_date, 10))) {
+        return res.error(new PrettyError(400, 'before_date must be defined and a timestamp'));
+      }
+
+      domain.Measurements.removeAllData(before_date, function (err) {
+        if (err) {
+          return res.error(err);
+        }
+        res.status(201).end();
+      });
+    },
+
     // Define middlewares
     middlewares: [
 
