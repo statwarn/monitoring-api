@@ -49,6 +49,7 @@ PrettyError.fromValidation = function (validationError) {
   return new PrettyError(400, 'Validation error', null, errors);
 };
 
+// todo : create middleware to check if IS_PROD and show stack (or not)
 PrettyError.prototype.toJSON = function () {
   var o = {
     code: this.code,
