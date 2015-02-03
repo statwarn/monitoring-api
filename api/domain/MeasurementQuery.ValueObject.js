@@ -3,6 +3,7 @@
 /**
  * MeasurementQuery value
  */
+var filtrES = require('filtres');
 
 module.exports = function (DateRangeInterval) {
   /**
@@ -13,9 +14,10 @@ module.exports = function (DateRangeInterval) {
    * @param {DateRangeInterval} aggs
    * @private
    */
-  function MeasurementQuery(ids, fields, aggs, dateRangeInterval) {
+  function MeasurementQuery(ids, fields, filters, aggs, dateRangeInterval) {
     this.ids = ids;
     this.fields = fields;
+    this.filters = filters;
     this.aggs = aggs;
     this.range = dateRangeInterval;
   }
@@ -64,6 +66,8 @@ module.exports = function (DateRangeInterval) {
       return obj;
     }.bind(this), {});
 
+    var filters = filtrES.compile(this.filters);
+
     return {
       indices: this.ids.map(makeIndexFromId),
       type: index_document_type,
@@ -79,7 +83,7 @@ module.exports = function (DateRangeInterval) {
               from: this.range.start_ts,
               to: this.range.end_ts
             }
-          }
+          },
         },
 
         aggs: {
@@ -209,6 +213,7 @@ module.exports = function (DateRangeInterval) {
     req.query.ids = convertToArray(req.query.id || req.query.ids);
     req.query.fields = convertToArray(req.query.field || req.query.fields);
     req.query.aggs = convertToArray(req.query.agg || req.query.aggs);
+    req.query.filters = req.query.filter || req.query.filters || '';
 
     if (req.query.aggs.length > 0 && req.query.aggs.length !== req.query.fields.length) {
       return new PrettyError(400, 'For each `fields` specified an aggregation type (`aggs`) must be specified');
@@ -219,8 +224,12 @@ module.exports = function (DateRangeInterval) {
       req.query.aggs = req.query.fields.map(_.partial(_.identity, MeasurementQuery.DEFAULT_AGGREGATION_TYPE));
     }
 
+    if (!_.isString(req.query.filters)) {
+      return new PrettyError(400, 'filter or filters must be a string');
+    }
+
     return _.validate(req.query, MeasurementQuery.schema.fromReq, function fallback(query) {
-      return new MeasurementQuery(query.ids, query.fields, query.aggs, dateRangeInterval);
+      return new MeasurementQuery(query.ids, query.fields, query.filters, query.aggs, dateRangeInterval);
     });
   };
 
@@ -243,3 +252,4 @@ function convertToArray(value) {
   // invalid value
   return [];
 }
+
