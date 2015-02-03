@@ -66,8 +66,6 @@ module.exports = function (DateRangeInterval) {
       return obj;
     }.bind(this), {});
 
-    var filters = filtrES.compile(this.filters);
-
     return {
       indices: this.ids.map(makeIndexFromId),
       type: index_document_type,
@@ -228,6 +226,12 @@ module.exports = function (DateRangeInterval) {
       return new PrettyError(400, 'filter or filters must be a string');
     }
 
+    try {
+      req.query.filters = filtrES.compile(req.query.filters);
+    } catch (err) {
+      return new PrettyError(400, 'filter or filters are invalid', err);
+    }
+
     return _.validate(req.query, MeasurementQuery.schema.fromReq, function fallback(query) {
       return new MeasurementQuery(query.ids, query.fields, query.filters, query.aggs, dateRangeInterval);
     });
@@ -252,4 +256,3 @@ function convertToArray(value) {
   // invalid value
   return [];
 }
-
