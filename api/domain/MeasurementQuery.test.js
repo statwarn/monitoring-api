@@ -92,7 +92,8 @@ describe('MeasurementQuery', function () {
         measurementQuery = MeasurementQuery.fromReq({
           query: {
             id: '10',
-            fields: ['plop', 'plop']
+            fields: ['plop', 'plop'],
+            filters: 'data.server_id == "549db2d721a4764672000397" and data.used_memory > 9000'
           }
         }, dateRangeInterval);
       });
@@ -114,13 +115,29 @@ describe('MeasurementQuery', function () {
                 "filter": {
                   "bool": {
                     "must": [{
-                      "range": {
-                        "timestamp": {
-                          "from": 1420293008365,
-                          "to": 1420294008365
+                        "range": {
+                          "timestamp": {
+                            "from": 1420293008365,
+                            "to": 1420294008365
+                          }
                         }
-                      }
-                    }, {}]
+                      },
+                      [{
+                        "bool": {
+                          "must": [{
+                            "term": {
+                              "data.server_id": "549db2d721a4764672000397"
+                            }
+                          }, {
+                            "range": {
+                              "data.used_memory": {
+                                "gt": 9000
+                              }
+                            }
+                          }]
+                        }
+                      }]
+                    ]
                   }
                 }
               }
