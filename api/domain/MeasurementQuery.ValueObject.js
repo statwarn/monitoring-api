@@ -76,12 +76,22 @@ module.exports = function (DateRangeInterval) {
         size: 0,
 
         query: {
-          range: {
-            timestamp: {
-              from: this.range.start_ts,
-              to: this.range.end_ts
+          filtered: {
+            filter: {
+              bool: {
+                must: [{
+                    range: {
+                      timestamp: {
+                        from: this.range.start_ts,
+                        to: this.range.end_ts
+                      }
+                    }
+                  },
+                  this.filters
+                ]
+              }
             }
-          },
+          }
         },
 
         aggs: {
@@ -227,7 +237,7 @@ module.exports = function (DateRangeInterval) {
     }
 
     try {
-      req.query.filters = filtrES.compile(req.query.filters);
+      req.query.filters = !_.isEmpty(req.query.filters) ? filtrES.compile(req.query.filters).query.filtered.filter : {};
     } catch (err) {
       return new PrettyError(400, 'filter or filters are invalid', err);
     }
