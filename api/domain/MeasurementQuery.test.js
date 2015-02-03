@@ -45,7 +45,21 @@ describe('MeasurementQuery', function () {
       t.include(err.message, 'field or fields');
     });
 
-    it('should return return an erreur if the specified aggregates don\'t match the fields count', function () {
+    it('should return an error if filter or filters exists and is not a string', function () {
+      var err = MeasurementQuery.fromReq({
+        query: {
+          interval: 'plop',
+          id: '10',
+          field: 'a',
+          agg: 'a',
+          filter: 3
+        }
+      }, dateRangeInterval);
+      t.ok(err instanceof PrettyError, 'should be a pretty error');
+      t.include(err.message, 'filter or filters');
+    });
+
+    it('should return return an error if the specified aggregates don\'t match the fields count', function () {
       var err = MeasurementQuery.fromReq({
         query: {
           interval: 'plop',
@@ -96,10 +110,18 @@ describe('MeasurementQuery', function () {
           "body": {
             "size": 0,
             "query": {
-              "range": {
-                "timestamp": {
-                  "from": 1420293008365,
-                  "to": 1420294008365
+              "filtered": {
+                "filter": {
+                  "bool": {
+                    "must": [{
+                      "range": {
+                        "timestamp": {
+                          "from": 1420293008365,
+                          "to": 1420294008365
+                        }
+                      }
+                    }, {}]
+                  }
                 }
               }
             },
