@@ -3,6 +3,7 @@
 /**
  * MeasurementQuery value
  */
+var filtrES = require('filtres');
 
 module.exports = function (DateRangeInterval) {
   /**
@@ -13,9 +14,10 @@ module.exports = function (DateRangeInterval) {
    * @param {DateRangeInterval} aggs
    * @private
    */
-  function MeasurementQuery(ids, fields, aggs, dateRangeInterval) {
+  function MeasurementQuery(ids, fields, filters, aggs, dateRangeInterval) {
     this.ids = ids;
     this.fields = fields;
+    this.filters = filters;
     this.aggs = aggs;
     this.range = dateRangeInterval;
   }
@@ -74,10 +76,20 @@ module.exports = function (DateRangeInterval) {
         size: 0,
 
         query: {
-          range: {
-            timestamp: {
-              from: this.range.start_ts,
-              to: this.range.end_ts
+          filtered: {
+            filter: {
+              bool: {
+                must: [{
+                    range: {
+                      timestamp: {
+                        from: this.range.start_ts,
+                        to: this.range.end_ts
+                      }
+                    }
+                  },
+                  this.filters
+                ]
+              }
             }
           }
         },
@@ -209,6 +221,7 @@ module.exports = function (DateRangeInterval) {
     req.query.ids = convertToArray(req.query.id || req.query.ids);
     req.query.fields = convertToArray(req.query.field || req.query.fields);
     req.query.aggs = convertToArray(req.query.agg || req.query.aggs);
+    req.query.filters = req.query.filter || req.query.filters || '';
 
     if (req.query.aggs.length > 0 && req.query.aggs.length !== req.query.fields.length) {
       return new PrettyError(400, 'For each `fields` specified an aggregation type (`aggs`) must be specified');
@@ -219,8 +232,18 @@ module.exports = function (DateRangeInterval) {
       req.query.aggs = req.query.fields.map(_.partial(_.identity, MeasurementQuery.DEFAULT_AGGREGATION_TYPE));
     }
 
+    if (!_.isString(req.query.filters)) {
+      return new PrettyError(400, 'filter or filters must be a string');
+    }
+
+    try {
+      req.query.filters = !_.isEmpty(req.query.filters) ? filtrES.compile(req.query.filters).query.filtered.filter : {};
+    } catch (err) {
+      return new PrettyError(400, 'filter or filters are invalid', err);
+    }
+
     return _.validate(req.query, MeasurementQuery.schema.fromReq, function fallback(query) {
-      return new MeasurementQuery(query.ids, query.fields, query.aggs, dateRangeInterval);
+      return new MeasurementQuery(query.ids, query.fields, query.filters, query.aggs, dateRangeInterval);
     });
   };
 
