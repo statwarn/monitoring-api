@@ -1,4 +1,4 @@
-/*jshint maxcomplexity: 12*/
+/*jshint maxcomplexity: 17*/
 'use strict';
 /**
  * MeasurementQuery value
