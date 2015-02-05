@@ -23,7 +23,7 @@ describe('Measurement Repository', function () {
           }
         }, config);
 
-        async.each(testObjCollection, function postDummyOnES(obj, cb) {
+        async.eachSeries(testObjCollection, function postDummyOnES(obj, cb) {
           var id = 'test';
           var entity = require('./Measurement.Entity').fromJSON(id, {
             timestamp: _.now(),
