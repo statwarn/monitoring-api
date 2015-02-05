@@ -101,5 +101,7 @@
         "describe",
         "beforeEach",
         "afterEach",
+        "before",
+        "after",
         "it"]       // additional predefined global variables
 }

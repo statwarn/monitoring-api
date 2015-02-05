@@ -55,7 +55,7 @@ describe('Measurement Repository', function () {
               match_all: {}
             }
           }
-        }, function (err, res) {
+        }, function (err) {
           if (err) {
             throw err;
           }
@@ -67,7 +67,7 @@ describe('Measurement Repository', function () {
     it('should return a PrettyError', function (done) {
       var id = 'plop';
       var size = 10;
-      Measurement.describe(id, size, function (err, keys) {
+      Measurement.describe(id, size, function (err) {
         t.isPrettyError(err, 500);
         done();
       });
