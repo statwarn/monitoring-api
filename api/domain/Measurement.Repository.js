@@ -4,10 +4,20 @@
 module.exports = function (es, amqp, config, DateRangeInterval, MeasurementQuery) {
   assert(_.isString(config.elasticsearch.index.name_prefix));
   assert(_.isString(config.elasticsearch.index.document.type));
+
+  assert(_.isString(config.amqp.publish.publish_key));
+  assert(_.isString(config.amqp.publish.exchange));
+
+  assert(_.isString(config.statwarn.schema.monitoring.create));
+
   assert(amqp.publishExchange);
 
   var INDEX_NAME_PREFIX = config.elasticsearch.index.name_prefix;
   var INDEX_DOCUMENT_TYPE = config.elasticsearch.index.document.type;
+
+  var MONITORING_PUBLISH_KEY = config.amqp.publish.publish_key;
+  var MONITORING_EXCHANGE = config.amqp.publish.exchange;
+  var SCHEMA_MONITORING_CREATE = config.statwarn.schema.monitoring.create;
 
   var Measurement = require('./Measurement.Entity');
 
@@ -39,10 +49,11 @@ module.exports = function (es, amqp, config, DateRangeInterval, MeasurementQuery
         }
 
         // then publish it in AMQP
-        amqp.publishExchange.publish('monitoring.new', measurement, {
+        amqp.publishExchange.publish(MONITORING_PUBLISH_KEY, measurement, {
           mandatory: true,
           confirm: true,
-          exchange: 'monitoring'
+          exchange: MONITORING_EXCHANGE,
+          type: SCHEMA_MONITORING_CREATE
         }, function onConfirm() {
           f(null);
         });

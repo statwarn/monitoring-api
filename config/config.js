@@ -5,6 +5,11 @@ module.exports = function (logger) {
 
   var config = env.getOrElseAll({
     statwarn: {
+      schema: {
+        monitoring: {
+          create: 'application/vnd.com.statwarn.monitoring.create.v1+json'
+        }
+      },
       monitoring: {
         api: {
           port: 9000
@@ -57,7 +62,7 @@ module.exports = function (logger) {
       publish: {
         // Publish new measurement on exchange
         exchange: 'monitoring',
-        key_suffix: 'monitoring.new'
+        publish_key: 'monitoring.new'
       }
     }
   });
