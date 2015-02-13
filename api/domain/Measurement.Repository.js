@@ -45,7 +45,7 @@ module.exports = function (es, amqp, config, DateRangeInterval, MeasurementQuery
 
   function createEnvelopeFromMeasurement(measurement) {
     return {
-      id: 'evt_' + +new Date(), // @todo create a UUID instead
+      id: 'evt_' + (+new Date()), // @todo create a UUID instead
       created: +new Date(), // current date
       type: SCHEMA_MONITORING_CREATE,
       data: measurement
