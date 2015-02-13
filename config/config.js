@@ -12,7 +12,7 @@ module.exports = function (logger) {
       },
       monitoring: {
         api: {
-          port: 9000
+          port: 9002
         }
       }
     },
