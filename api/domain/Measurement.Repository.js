@@ -25,6 +25,33 @@ module.exports = function (es, amqp, config, DateRangeInterval, MeasurementQuery
     return INDEX_NAME_PREFIX + '-' + id;
   }
 
+  function makePublishKeyFromId(id) {
+    return MONITORING_PUBLISH_KEY + '-' + id;
+  }
+
+  function publishOnRabbitMQ(measurement, f) {
+    var message = createEnvelopeFromMeasurement(measurement);
+    var publish_key = makePublishKeyFromId(measurement.id);
+    // then publish it in AMQP
+    amqp.publishExchange.publish(publish_key, message, {
+      mandatory: true,
+      confirm: true,
+      exchange: MONITORING_EXCHANGE,
+      type: SCHEMA_MONITORING_CREATE
+    }, function onConfirm() {
+      f(null);
+    });
+  }
+
+  function createEnvelopeFromMeasurement(measurement) {
+    return {
+      id: 'evt_' + +new Date(), // @todo create a UUID instead
+      created: +new Date(), // current date
+      type: SCHEMA_MONITORING_CREATE,
+      data: measurement
+    };
+  }
+
   return {
     /**
      * Create a measurement inside storage backend
@@ -48,15 +75,7 @@ module.exports = function (es, amqp, config, DateRangeInterval, MeasurementQuery
           return f(new PrettyError(500, 'Could not create the measurement', err));
         }
 
-        // then publish it in AMQP
-        amqp.publishExchange.publish(MONITORING_PUBLISH_KEY, measurement, {
-          mandatory: true,
-          confirm: true,
-          exchange: MONITORING_EXCHANGE,
-          type: SCHEMA_MONITORING_CREATE
-        }, function onConfirm() {
-          f(null);
-        });
+        publishOnRabbitMQ(measurement, f);
       });
     },
 
@@ -71,6 +90,7 @@ module.exports = function (es, amqp, config, DateRangeInterval, MeasurementQuery
     findByIds: function (measurementQuery, f) {
       assert(measurementQuery instanceof MeasurementQuery);
 
+      console.log(JSON.stringify(measurementQuery.buildQuery(makeIndexFromId, INDEX_DOCUMENT_TYPE), null, 2));
       es.search(measurementQuery.buildQuery(makeIndexFromId, INDEX_DOCUMENT_TYPE), function (err, result) {
         if (err) {
           return f(new PrettyError(500, 'Could not retrieve measurement, try again.', err));
