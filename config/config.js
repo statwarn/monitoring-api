@@ -62,7 +62,7 @@ module.exports = function (logger) {
       publish: {
         // Publish new measurement on exchange
         exchange: 'monitoring',
-        publish_key: 'monitoring.new'
+        publish_key: 'monitoring.create'
       }
     }
   });
