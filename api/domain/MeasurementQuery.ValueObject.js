@@ -221,7 +221,7 @@ module.exports = function (DateRangeInterval) {
     req.query.ids = convertToArray(req.query.id || req.query.ids);
     req.query.fields = convertToArray(req.query.field || req.query.fields);
     req.query.aggs = convertToArray(req.query.agg || req.query.aggs);
-    req.query.filters = req.query.filter || req.query.filters || '';
+    req.query.filters = req.query.filter ||  req.query.filters ||  '';
 
     if (req.query.aggs.length > 0 && req.query.aggs.length !== req.query.fields.length) {
       return new PrettyError(400, 'For each `fields` specified an aggregation type (`aggs`) must be specified');
