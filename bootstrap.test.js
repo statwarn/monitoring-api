@@ -18,8 +18,6 @@ if (!process.env.OVERRIDE) {
 }
 
 // ensure that we are running the tests in dev env
-assert(process.env.AMQP_VHOST === 'test');
-assert(process.env.ELASTICSEARCH_HOST_HOST === 'redsmintest.west-eu.azr.facetflow.io');
 
 var ServerFactory = require('./server');
 global.t = require('chai').assert;
@@ -42,8 +40,6 @@ t.isPrettyError = function (err, code, message) {
 t.getAPP = function getAPP(f) {
   ServerFactory(function (app, config, logger, es, amqp) {
     // ensure that we are using test configuration
-    assert(_.contains(config.amqp.vhost, 'test'));
-    assert(!_.contains(config.elasticsearch.host, 'elasticsearch.redsmin.com'));
 
     f(app, config, logger, es, amqp);
   }, _.noop, {

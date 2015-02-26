@@ -37,9 +37,4 @@ describe('Monitoring API server', function () {
         .end(done);
     });
   });
-
-  describe('GET /api/v1/measurements', function () {
-    // https://redsmintest.west-eu.azr.facetflow.io/monitoring-testid/measurement/_search?size=10&from=0
-    // https://redsmintest.west-eu.azr.facetflow.io/monitoring-testid/_mapping
-  });
 });

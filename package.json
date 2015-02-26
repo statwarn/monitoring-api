@@ -10,13 +10,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@bitbucket.org:redsmin/monitoring-api.git"
+    "url": "git@bitbucket.org:statwarn/monitoring-api.git"
   },
   "keywords": [
     "monitoring",
     "api",
-    "redsmin",
-    "redis",
+    "statwarn",
     "elasticsearch"
   ],
   "author": "rbaumier",

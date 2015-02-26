@@ -14,7 +14,7 @@ curl -XGET localhost:9000/internal/templates/setup
 
 # API
 
-__baseUrl: monitoring.redsmin.com/api/v1__
+__baseUrl: monitoring.statwarn.com/api/v1__
 
 ### POST /measurement
 
