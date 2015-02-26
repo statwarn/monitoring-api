@@ -1,0 +1,7 @@
+.env
+node_modules
+.DS_Store
+npm-debug.log
+statwarn.png
+ci/.env_test
+benchmark/
