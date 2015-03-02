@@ -16,7 +16,7 @@ curl -XGET localhost:9000/internal/templates/setup
 
 __baseUrl: monitoring.statwarn.com/api/v1__
 
-### POST /measurement
+### POST /measurements/:id
 
 #### request
 
@@ -24,7 +24,6 @@ __param:__
 
 ```
 timestamp: Number (optional)  (format ISO 8601)
-id: String id
 ```
 
 (json):
@@ -56,9 +55,9 @@ Internal Error 500: Internal server error
 Gateway Timeout 504: timeout
 ```
 
-### GET /measurement
+### GET /measurements
 
-example of metric : instantaneous_ops_per_sec
+List all user's measurements according to following params
 
 __params:__
 
@@ -81,7 +80,7 @@ return the metric in json format with timestamp (example of metric_name: instant
 ```
 [
   {
-  	"id": String
+    "id": String
     "field": String (name of the field),
     "values": [
       {
@@ -104,7 +103,34 @@ Internal Error 500: Internal Server Error
 Gateway Timeout 504: timeout
 ```
 
-### DEL /measurement
+### GET /measurements/:id/describe
+
+example of metric : instantaneous_ops_per_sec
+
+__params:__
+
+```
+size: Number (default 10)
+```
+
+__response__
+
+return the format of the last `size` measurements
+
+```
+{
+  instantaneous_ops_per_sec: "number"
+}
+```
+
+#### Errors
+
+```
+Internal Error 500: Internal Server Error
+Gateway Timeout 504: timeout
+```
+
+### DEL /measurements
 
 Remove every metrics related to on or more `server_ids`. This route will be called each time a user remove its account or its own server.
 
