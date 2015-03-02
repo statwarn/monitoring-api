@@ -1,4 +1,5 @@
 'use strict';
+var EsEx = require('elasticsearch-exceptions');
 
 // MeasurementRepository
 module.exports = function (es, amqp, config, DateRangeInterval, MeasurementQuery) {
@@ -55,7 +56,7 @@ module.exports = function (es, amqp, config, DateRangeInterval, MeasurementQuery
   return {
     /**
      * Create a measurement inside storage backend
-     * @param  {Measurement} metric
+     * @param  {Measurement} measurement
      * @param  {Function} f(PrettyError)
      */
     create: function (measurement, f) {
@@ -81,10 +82,7 @@ module.exports = function (es, amqp, config, DateRangeInterval, MeasurementQuery
 
     /**
      * [findByIds description]
-     * @param  {Array} ids array of time serie ids
-     * @param  {Array} fields
-     * @param  {Array} aggs array of aggregation type
-     * @param  {DateRangeInterval} dateRangeInterval
+     * @param  {MeasurementQuery} measurementQuery
      * @param  {Function} f(err: PrettyError, data: Array, took: Number)
      */
     findByIds: function (measurementQuery, f) {
@@ -93,7 +91,11 @@ module.exports = function (es, amqp, config, DateRangeInterval, MeasurementQuery
       console.log(JSON.stringify(measurementQuery.buildQuery(makeIndexFromId, INDEX_DOCUMENT_TYPE), null, 2));
       es.search(measurementQuery.buildQuery(makeIndexFromId, INDEX_DOCUMENT_TYPE), function (err, result) {
         if (err) {
-          return f(new PrettyError(500, 'Could not retrieve measurement, try again.', err));
+          return f(
+            EsEx.isIndexMissingException(err) ? 
+              new PrettyError(404, 'Measurement not found', err) : 
+              new PrettyError(500, 'Could not retrieve measurement, try again.', err)
+          );
         }
 
         return f(null, measurementQuery.parseResults(result), result.took);
@@ -113,9 +115,14 @@ module.exports = function (es, amqp, config, DateRangeInterval, MeasurementQuery
           }]
         },
       }, function (err, res) {
-        if (err || !res || !res.hits.hits) {
-          return f(new PrettyError(500, 'Could not retrieve measurement, try again.', err));
+        if (err || !res || !res.hits.hits ) {
+          return f(
+            EsEx.isIndexMissingException(err) ? 
+              new PrettyError(404, 'Measurement not found', err) : 
+              new PrettyError(500, 'Could not retrieve measurement, try again.', err)
+          );
         }
+
         // only get source.data of document
         var source = _(res.hits.hits)
           .pluck('_source')
@@ -132,6 +139,12 @@ module.exports = function (es, amqp, config, DateRangeInterval, MeasurementQuery
       });
     },
 
+    /**
+     *
+     * @param  {Number} before_date
+     *   TODO: ensure before_date is in millisec
+     * @param  {Function} f
+     */
     removeAllData: function (before_date, f) {
       // get indices starting by 'monitoring'
       es.indices.getAliases({
