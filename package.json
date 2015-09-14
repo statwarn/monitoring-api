@@ -12,6 +12,9 @@
     "type": "git",
     "url": "git@bitbucket.org:statwarn/monitoring-api.git"
   },
+  "engines": {
+    "node": "0.10.35"
+  },
   "keywords": [
     "monitoring",
     "api",
